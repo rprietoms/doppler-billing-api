@@ -167,7 +167,7 @@ then
   canonicalTag=${versionFull}
 fi
 
-imageName=fromdoppler/cuit-service
+imageName=fromdoppler/billing-api
 
 docker build \
     -t "${imageName}:${canonicalTag}" \
