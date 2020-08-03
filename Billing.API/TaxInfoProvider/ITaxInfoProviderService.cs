@@ -1,4 +1,5 @@
 using System.Threading.Tasks;
+using Billing.API.Models;
 
 namespace Billing.API.TaxInfoProvider
 {

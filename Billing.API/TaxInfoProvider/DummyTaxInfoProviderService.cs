@@ -1,19 +1,16 @@
 using System.Threading.Tasks;
+using Billing.API.Models;
 
 namespace Billing.API.TaxInfoProvider
 {
     public class DummyTaxInfoProviderService : ITaxInfoProviderService
     {
-        public DummyTaxInfoProviderService()
-        {
-        }
-
         public Task<TaxInfo> GetTaxInfoByCuit(CuitNumber cuit)
-            => Task.FromResult(new TaxInfo()
+            => Task.FromResult(new TaxInfo
             {
                 ActividadPrincipal = "620100-SERVICIOS DE CONSULTORES EN INFORMÁTICA Y SUMINISTROS DE PROGRAMAS DE INFORMÁTICA",
                 Apellido = null,
-                CUIT = cuit.cuit,
+                CUIT = cuit.CUIT,
                 CatIVA = "RI",
                 CatImpGanancias = "RI",
                 DomicilioCodigoPostal = "7600",

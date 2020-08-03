@@ -1,11 +1,11 @@
+using System;
+using System.Collections.Generic;
 using Billing.API.DopplerSecurity;
 using Microsoft.AspNetCore.Authorization.Policy;
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.AspNetCore.TestHost;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using System;
-using System.Collections.Generic;
 
 namespace Billing.API.Test
 {

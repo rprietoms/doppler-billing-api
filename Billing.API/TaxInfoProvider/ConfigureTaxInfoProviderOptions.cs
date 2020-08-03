@@ -5,7 +5,7 @@ namespace Billing.API.TaxInfoProvider
 {
     public class ConfigureTaxInfoProviderOptions : IConfigureOptions<TaxInfoProviderOptions>
     {
-        private const string DefaultConfigurationSectionName = "TaxInfoProvider";
+        private const string DEFAULT_CONFIGURATION_SECTION_NAME = "TaxInfoProvider";
 
         private readonly IConfiguration _configuration;
 
@@ -16,7 +16,7 @@ namespace Billing.API.TaxInfoProvider
 
         public void Configure(TaxInfoProviderOptions options)
         {
-            _configuration.Bind(DefaultConfigurationSectionName, options);
+            _configuration.Bind(DEFAULT_CONFIGURATION_SECTION_NAME, options);
         }
     }
 }

@@ -14,8 +14,9 @@ namespace Billing.API
         // TODO: rename as OriginalValue
         // Ugly patch, this value should come from de validated parameter, ie: /taxinfo/by-cuit/{cuit}
         // it wil be fixed after moving to a custom model binder
-        public string? cuit { get; set; }
-        public string SimplifiedValue => cuit?.Replace("-", "") ?? string.Empty;
+        public string? CUIT { get; set; }
+
+        public string SimplifiedValue => CUIT?.ReplaceByEmpty("-") ?? string.Empty;
         // TODO: add a new field Formatted Value, and return that value in ToString
 
         public IEnumerable<ValidationResult> Validate(ValidationContext validationContext)
@@ -23,22 +24,26 @@ namespace Billing.API
             // By the moment it is also dealing with `required` validation
             if (string.IsNullOrWhiteSpace(SimplifiedValue))
             {
-                return new[] { new ValidationResult("The CUIT number cannot be empty.", new[] { nameof(cuit) }) };
+                return new[] {new ValidationResult("The CUIT number cannot be empty.", new[] {nameof(CUIT)})};
             }
 
             if (!SimplifiedValue.All(char.IsNumber))
             {
-                return new[] { new ValidationResult("The CUIT number cannot have other characters than numbers and dashes.", new[] { nameof(cuit) }) };
+                return new[]
+                {
+                    new ValidationResult("The CUIT number cannot have other characters than numbers and dashes.",
+                                         new[] {nameof(CUIT)})
+                };
             }
 
             if (SimplifiedValue.Length != 11)
             {
-                return new[] { new ValidationResult("The CUIT number must have 11 digits.", new[] { nameof(cuit) }) };
+                return new[] {new ValidationResult("The CUIT number must have 11 digits.", new[] {nameof(CUIT)})};
             }
 
             if (!IsVerificationDigitValid(SimplifiedValue))
             {
-                return new[] { new ValidationResult("The CUIT's verification digit is wrong.", new[] { nameof(cuit) }) };
+                return new[] {new ValidationResult("The CUIT's verification digit is wrong.", new[] {nameof(CUIT)})};
             }
 
             return new ValidationResult[0];
@@ -48,7 +53,7 @@ namespace Billing.API
         // Source: https://es.wikipedia.org/wiki/Clave_%C3%9Anica_de_Identificaci%C3%B3n_Tributaria
         private static bool IsVerificationDigitValid(string normalizedCuit)
         {
-            var factors = new int[] { 5, 4, 3, 2, 7, 6, 5, 4, 3, 2 };
+            var factors = new int[] {5, 4, 3, 2, 7, 6, 5, 4, 3, 2};
 
             var accumulated = 0;
 

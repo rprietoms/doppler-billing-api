@@ -1,7 +1,7 @@
-using Billing.API.TaxInfoProvider;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Microsoft.Extensions.DependencyInjection
+namespace Billing.API.TaxInfoProvider
 {
     public static class TaxInfoProviderServiceCollectionExtensions
     {

@@ -27,7 +27,7 @@ namespace Billing.API.Test
             _httpTest.Dispose();
         }
 
-        private readonly object DemoResult = new
+        private readonly object _demoResult = new
         {
             ActividadPrincipal = "620100-SERVICIOS DE CONSULTORES EN INFORMÁTICA Y SUMINISTROS DE PROGRAMAS DE INFORMÁTICA",
             Apellido = (string?)null,
@@ -77,7 +77,7 @@ namespace Billing.API.Test
             var cuit = "20-31111111-7";
             var expectedUrl = $"http://{host}:33333/api/TaxInfo?ID=20311111117+CardData=Y";
 
-            _httpTest.RespondWithJson(DemoResult);
+            _httpTest.RespondWithJson(_demoResult);
 
             using var appFactory = _factory.WithDisabledLifeTimeValidation()
                 .AddConfiguration(new Dictionary<string, string>()
@@ -161,7 +161,7 @@ namespace Billing.API.Test
         public async Task GET_taxinfo_by_cuit_with_a_valid_CUIT_should_return_200_OK_when_JWT_token_is_a_valid_Doppler_TEST_one()
         {
             // Arrange
-            _httpTest.RespondWithJson(DemoResult);
+            _httpTest.RespondWithJson(_demoResult);
 
             var appFactory = _factory.WithDisabledLifeTimeValidation();
             appFactory.Server.PreserveExecutionContext = true;

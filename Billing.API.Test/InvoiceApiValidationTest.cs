@@ -10,12 +10,12 @@ using Xunit;
 
 namespace Billing.API.Test
 {
-    public class TaxInfoApi_ValidationTest : IClassFixture<WebApplicationFactory<Startup>>, IDisposable
+    public class InvoiceApiValidationTest : IClassFixture<WebApplicationFactory<Startup>>, IDisposable
     {
         private readonly WebApplicationFactory<Startup> _factory;
         private readonly HttpTest _httpTest;
 
-        public TaxInfoApi_ValidationTest(WebApplicationFactory<Startup> factory)
+        public InvoiceApiValidationTest(WebApplicationFactory<Startup> factory)
         {
             _factory = factory;
             _httpTest = new HttpTest();
@@ -24,37 +24,6 @@ namespace Billing.API.Test
         public void Dispose()
         {
             _httpTest.Dispose();
-        }
-
-        [Theory]
-        [InlineData("20-31111111-8")]
-        [InlineData("20-31111111-6")]
-        [InlineData("20-31111111-1")]
-        public async Task GET_taxinfo_by_cuit_with_an_invalid_verification_digit_should_return_400_BadRequest(string cuit)
-        {
-            // Arrange
-            var appFactory = _factory.WithBypassAuthorization();
-            appFactory.Server.PreserveExecutionContext = true;
-            var client = appFactory.CreateClient();
-
-            // Act
-            var response = await client.GetAsync($"https://custom.domain.com/taxinfo/by-cuit/{cuit}");
-
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
-
-            _httpTest.ShouldNotHaveMadeACall();
-
-            var content = await response.Content.ReadAsStringAsync();
-            var problemDetail = JsonSerializer.Deserialize<JsonElement>(content);
-            Assert.Equal("One or more validation errors occurred.", problemDetail.GetProperty("title").GetString());
-            Assert.Collection(problemDetail.GetProperty("errors").EnumerateObject(),
-                item =>
-                {
-                    Assert.Equal("cuit", item.Name);
-                    Assert.Equal(1, item.Value.GetArrayLength());
-                    Assert.Equal("The CUIT's verification digit is wrong.", item.Value.EnumerateArray().First().GetString());
-                });
         }
 
         [Theory]
@@ -157,7 +126,7 @@ namespace Billing.API.Test
         [Theory]
         [InlineData("")]
         [InlineData("     ")]
-        public async Task GET_taxinfo_by_cuit_without_segment_should_return_404_NotFound(string cuit)
+        public async Task GetInvoices_taxinfo_by_cuit_without_segment_should_return_404_NotFound(string cuit)
         {
             // Arrange
             var appFactory = _factory.WithBypassAuthorization();
@@ -179,10 +148,11 @@ namespace Billing.API.Test
         [InlineData("33123456780")]
         [InlineData("20-31111111-7")]
         [InlineData("3-3-1-2-3-4-5-6-7-8-0")]
-        public async Task GET_taxinfo_by_cuit_should_accept_valid_cuit_numbers(string cuit)
+        public async Task GetInvoices_taxinfo_by_cuit_should_accept_valid_cuit_numbers(string cuit)
         {
             // Arrange
             _httpTest.RespondWithJson(new { });
+
             var appFactory = _factory.WithBypassAuthorization()
                 .AddConfiguration(new Dictionary<string, string>()
                 {
