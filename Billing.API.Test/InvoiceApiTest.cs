@@ -1,12 +1,12 @@
+using AutoFixture.Xunit2;
+using Flurl.Http.Testing;
+using Microsoft.AspNetCore.Mvc.Testing;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using AutoFixture.Xunit2;
-using Flurl.Http.Testing;
-using Microsoft.AspNetCore.Mvc.Testing;
 using Xunit;
 
 namespace Billing.API.Test
@@ -29,7 +29,7 @@ namespace Billing.API.Test
 
         [Theory]
         [AutoData]
-        public async Task GetInvoices_ReturnsNotFound(string url)
+        public async Task GetInvoices_WhenInvalidPath_ReturnsNotFound(string url)
         {
             // Arrange
             var client = _factory.CreateClient();

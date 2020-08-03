@@ -1,10 +1,10 @@
+using Billing.API.DopplerSecurity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
-namespace Billing.API.DopplerSecurity
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DopplerSecurityServiceCollectionExtensions
     {
