@@ -1,5 +1,4 @@
-using Billing.API.Services;
-using Billing.API.TaxInfoProvider;
+using Billing.API.Services.Invoice;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -9,18 +8,19 @@ namespace Billing.API.Extensions
     {
         public static IServiceCollection AddInvoice(this IServiceCollection services)
         {
-            //services.ConfigureOptions<ConfigureTaxInfoProviderOptions>();
+            services.ConfigureOptions<ConfigureInvoiceProviderOptions>();
 
-            services.AddSingleton<DummyTaxInfoProviderService>();
+            services.AddSingleton<DummyInvoiceProviderService>();
             services.AddTransient<InvoiceService>();
 
-            //services.AddTransient(serviceProvider =>
-            //{
-            //    var taxInfoProviderOptions = serviceProvider.GetRequiredService<IOptions<TaxInfoProviderOptions>>();
-            //    return taxInfoProviderOptions.Value.UseDummyData
-            //        ? (ITaxInfoProviderService)serviceProvider.GetRequiredService<DummyTaxInfoProviderService>()
-            //        : serviceProvider.GetRequiredService<TaxInfoProviderService>();
-            //});
+            services.AddTransient(serviceProvider =>
+            {
+                var invoiceProviderOptions = serviceProvider.GetRequiredService<IOptions<InvoiceProviderOptions>>();
+
+                return invoiceProviderOptions.Value.UseDummyData
+                    ? (IInvoiceService)serviceProvider.GetRequiredService<DummyInvoiceProviderService>()
+                    : serviceProvider.GetRequiredService<InvoiceService>();
+            });
 
             return services;
         }

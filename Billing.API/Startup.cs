@@ -1,6 +1,5 @@
 using Billing.API.DopplerSecurity;
 using Billing.API.Extensions;
-using Billing.API.TaxInfoProvider;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;

@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
-namespace Billing.API.Services
+namespace Billing.API.Services.Invoice
 {
     public interface IInvoiceService
     {
