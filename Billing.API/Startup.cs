@@ -20,7 +20,7 @@ namespace Billing.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDopplerSecurity();
-            services.AddInvoice();
+            services.AddInvoiceService();
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {

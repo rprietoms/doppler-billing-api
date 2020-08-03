@@ -6,7 +6,7 @@ namespace Billing.API.Extensions
 {
     public static class InvoiceServiceCollectionExtensions
     {
-        public static IServiceCollection AddInvoice(this IServiceCollection services)
+        public static IServiceCollection AddInvoiceService(this IServiceCollection services)
         {
             services.ConfigureOptions<ConfigureInvoiceProviderOptions>();
 

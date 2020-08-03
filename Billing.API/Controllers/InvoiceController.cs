@@ -22,12 +22,9 @@ namespace Billing.API.Controllers
             _invoiceService = invoiceService;
         }
 
-        [HttpGet("/invoices/{clientId}")]
+        [HttpGet("/invoices/{clientId:length(15)}")]
         public async Task<IActionResult> GetInvoices([FromRoute] string clientId)
         {
-            if (clientId.Length != 15)
-                return BadRequest();
-
             _logger.LogDebug("Getting invoices for client {0}", clientId);
 
             var stream = new MemoryStream(Encoding.UTF8.GetBytes("Sample file"));
