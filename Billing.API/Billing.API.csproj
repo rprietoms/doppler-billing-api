@@ -7,14 +7,15 @@
     <Nullable>enable</Nullable>
     <NullableReferenceTypes>true</NullableReferenceTypes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AssemblyVersion>2020.7.27.2</AssemblyVersion>
-    <FileVersion>2020.7.27.2</FileVersion>
+    <AssemblyVersion>2020.7.30.0</AssemblyVersion>
+    <FileVersion>2020.7.30.0</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Flurl.Http" Version="2.4.2" />
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.6" />
     <PackageReference Include="Tavis.UriTemplates" Version="1.1.1" />
+    <PackageReference Include="Z.ExtensionMethods" Version="2.1.1" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,6 +31,10 @@
     <None Update="public-keys\doppler_prod.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Models\" />
   </ItemGroup>
 
 </Project>

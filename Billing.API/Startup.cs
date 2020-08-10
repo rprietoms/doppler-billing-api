@@ -1,3 +1,5 @@
+using Billing.API.DopplerSecurity;
+using Billing.API.Extensions;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -18,7 +20,7 @@ namespace Billing.API
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddDopplerSecurity();
-            services.AddTaxInfoProvider();
+            services.AddInvoiceService();
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {
