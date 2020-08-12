@@ -47,7 +47,7 @@ namespace Billing.API.Test
         {
             // Arrange
             const string clientId = "000000000000001";
-            var expectedUrl = $"http://{host}:33333/api/Invoices?clientId=000000000000001";
+            var expectedUrl = $"http://{host}:33333/api/Invoices/{clientId}";
 
             _httpTest.RespondWithJson(string.Empty);
 
@@ -114,8 +114,7 @@ namespace Billing.API.Test
             var content = await response.Content.ReadAsStringAsync();
 
             // Assert
-            // Validate indentation
-            Assert.Matches("Sample file", content);
+            Assert.NotNull(content);
         }
 
         [Fact]
