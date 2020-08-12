@@ -6,7 +6,7 @@ namespace Billing.API.Services.Invoice
 {
     public interface IInvoiceService
     {
-        Task<IEnumerable<InvoiceResponse>> GetInvoices(string clientId);
+        Task<IEnumerable<InvoiceListItem>> GetInvoices(string clientId);
 
         Task TestSapConnection();
     }
