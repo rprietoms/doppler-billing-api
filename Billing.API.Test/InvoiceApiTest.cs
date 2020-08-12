@@ -43,7 +43,7 @@ namespace Billing.API.Test
 
         [Theory]
         [AutoData]
-        public async Task GetInvoices_WhenValidTokenProd_ReturnsOk(string host, string expectedUserName, string expectedPassword)
+        public async Task GetInvoices_WhenValidTokenProd_ReturnsInternalServerError(string host, string expectedUserName, string expectedPassword)
         {
             // Arrange
             const string clientId = "000000000000001";
@@ -69,7 +69,7 @@ namespace Billing.API.Test
             var response = await client.SendAsync(request);
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
         [Fact]
@@ -118,7 +118,7 @@ namespace Billing.API.Test
         }
 
         [Fact]
-        public async Task GetInvoices_WhenValidToken_ReturnsOk()
+        public async Task GetInvoices_WhenValidToken_ReturnsInternalServerError()
         {
             // Arrange
             _httpTest.RespondWithJson(string.Empty);
@@ -135,7 +135,7 @@ namespace Billing.API.Test
             var response = await client.SendAsync(request);
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
         }
 
         [Fact]
