@@ -28,10 +28,10 @@ namespace Billing.API.Test
 
         [Theory]
         [InlineData("")]
-        [InlineData("000000000000000")]
-        [InlineData("999999999999999")]
         [InlineData("00000000000000")]
         [InlineData("0000000000000000")]
+        [InlineData("000000000000000")]
+        [InlineData("999999999999999")]
         public async Task GetInvoices_InexistentClient_ReturnsNotFound(string clientId)
         {
             // Arrange

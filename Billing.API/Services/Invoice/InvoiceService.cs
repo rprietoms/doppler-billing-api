@@ -1,29 +1,26 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Billing.API.Models;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Billing.API.Services.Invoice
 {
     public class InvoiceService : IInvoiceService
     {
         private readonly ILogger<InvoiceService> _logger;
+        private readonly IOptions<InvoiceProviderOptions> _options;
 
-        public InvoiceService(ILogger<InvoiceService> logger)
+        public InvoiceService(ILogger<InvoiceService> logger, IOptions<InvoiceProviderOptions> options)
         {
             _logger = logger;
+            _options = options;
         }
 
-        public async Task<IEnumerable<string>> GetInvoices(string clientId)
+        public Task<IEnumerable<InvoiceListItem>> GetInvoices(string clientId)
         {
-            if (clientId.In("000000000000000", "999999999999999"))
-                return await Task.Run(() => new List<string>());
-
-            return await Task.Run(() => new List<string>
-            {
-                "Invoice 1.pdf",
-                "Invoice 2.pdf"
-            });
+            throw new NotImplementedException();
         }
 
         public async Task TestSapConnection()

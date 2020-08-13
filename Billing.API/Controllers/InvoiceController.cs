@@ -1,6 +1,4 @@
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Billing.API.Services.Invoice;
 using Microsoft.AspNetCore.Authorization;
@@ -27,14 +25,12 @@ namespace Billing.API.Controllers
         {
             _logger.LogDebug("Getting invoices for client {0}", clientId);
 
-            var stream = new MemoryStream(Encoding.UTF8.GetBytes("Sample file"));
-
             var response = await _invoiceService.GetInvoices(clientId);
 
             if (response == null || !response.Any())
                 return NotFound();
 
-            return File(stream, "application/octet-stream");
+            return Ok(response);
         }
 
         [HttpGet("/invoices/test")]
