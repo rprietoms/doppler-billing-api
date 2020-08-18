@@ -1,5 +1,6 @@
 using Billing.API.DopplerSecurity;
 using Billing.API.Extensions;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -21,6 +22,7 @@ namespace Billing.API
         {
             services.AddDopplerSecurity();
             services.AddInvoiceService();
+            services.AddSingleton<IAuthorizationHandler, IsSuperUserHandler>();
             services.AddControllers()
                 .AddJsonOptions(options =>
                 {

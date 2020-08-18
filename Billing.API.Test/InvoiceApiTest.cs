@@ -42,34 +42,36 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [AutoData]
-        public async Task GetInvoices_WhenValidTokenProd_ReturnsInternalServerError(string host, string expectedUserName, string expectedPassword)
+        [InlineData(HttpStatusCode.OK, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A")]
+        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ3MDksImV4cCI6MTU5Nzc2NDcxOSwiaWF0IjoxNTk3NzY0NzA5LCJpc1NVIjpmYWxzZX0.K7khi_qhvj0eF3ahZzNcRkzrRPDFR_q-5xAujSeFG3GaFhJIhgARX7fsA4iPPhTJtFA1oqF54d-vyNhGAhBDFzSKUHyRegdRJ5FiQwcQ537PbZUfCc702sEi-MjzfpkP1PZrk0Zrn5-ybUDJi-6qjia8_YxvA4px8KGPT10Z6PnrpeCuWtESmMlSre7CgCRpydXZ0XkV0hsn-CD8p5oSV9iMCXS3npJBBhzLvw9B_LienlnJQMVs88ykSDqZNUWdGMVTO4QF4JChd67W7B9I0MmmbtgCZ5yo0EwykYR6RaZYihtKjesmHlBcFaHJc1C-3V8TQ3L0-81PpemqZd_3yQ")]
+        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1NzcsImV4cCI6MTU5Nzc2NDU4NywiaWF0IjoxNTk3NzY0NTc3fQ.S3qzN2kCR7VtrkCG-FTq_Hrv377Fn8wevryAhHHKq5SupMsEaa1SYAdNZdlMLZyyZQUe95UYM4_Ba63Kbm9zu6fkh_xKfmLGbiZhEjJM5nVR0HLa7mAPTNY25YrfRtQRyyLvLDJ1KSXIY_iUd1IT1hQAIqMG7pD29eD6RY4_n_z619AgET94F_Jj7w505JvNNR7z5fpW5ZM1XaEPlrCbXVfCKtLLxM8YlNRBOmyJRG2ideaRfqEw7vb3AIW6c4EdHV1c9EBsYGfWkSJZOOpXKoOpUmvhVLmxpctTNNq_iS67JE3AFlkatboq9z8l9DHDIdoveIE6unHq4YgUmltnDg")]
+        [InlineData(HttpStatusCode.Unauthorized, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9")]
+        public async Task GetInvoices_WhenToken_ReturnsResponse(HttpStatusCode httpStatusCode, string token)
         {
             // Arrange
             const string clientId = "000000000000001";
-            var expectedUrl = $"http://{host}:33333/api/Invoices/{clientId}";
 
             _httpTest.RespondWithJson(string.Empty);
 
             using var appFactory = _factory.WithDisabledLifeTimeValidation()
                 .AddConfiguration(new Dictionary<string, string>
                 {
-                    ["Invoice:UseDummyData"] = "false",
-                    ["Invoice:Host"] = host,
-                    ["Invoice:UserName"] = expectedUserName,
-                    ["Invoice:Password"] = expectedPassword
+                    ["Invoice:UseDummyData"] = "true",
+                    ["Invoice:Host"] = "localhost",
+                    ["Invoice:UserName"] = "someUser",
+                    ["Invoice:Password"] = "somePass"
                 });
             appFactory.Server.PreserveExecutionContext = true;
             var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/invoices/{clientId}");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjg4NDY5LCJ1bmlxdWVfbmFtZSI6ImFtb3NjaGluaUBtYWtpbmdzZW5zZS5jb20iLCJpc1N1IjpmYWxzZSwic3ViIjoiYW1vc2NoaW5pQG1ha2luZ3NlbnNlLmNvbSIsImN1c3RvbWVySWQiOiIxMzY3IiwiY2RoX2N1c3RvbWVySWQiOiIxMzY3Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE1OTQxNTUwMjYsImV4cCI6MTU5NDE1NjgyNn0.a4eVqSBptPJk0y9V5Id1yXEzkSroX7j9712W6HOYzb-9irc3pVFQrdWboHcZPLlbpHUdsuoHmFOU-l14N_CjVF9mwjz0Qp9x88JP2KD1x8YtlxUl4BkIneX6ODQ5q_hDeQX-yIUGoU2-cIXzle-JzRssg-XIbaf34fXnUSiUGnQRAuWg3IkmpeLu9fVSbYrY-qW1os1gBSq4NEESz4T87hJblJv3HWNQFJxAtvhG4MLX2ITm8vYNtX39pwI5gdkLY7bNzWmJ1Uphz1hR-sdCdM2oUWKmRmL7txsoD04w5ca7YbdHQGwCI92We4muOs0-N7a4JHYjuDM9lL_TbJGw2w");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost/invoices/{clientId}");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
             var response = await client.SendAsync(request);
 
             // Assert
-            Assert.Equal(HttpStatusCode.InternalServerError, response.StatusCode);
+            Assert.Equal(httpStatusCode, response.StatusCode);
         }
 
         [Fact]
@@ -128,8 +130,8 @@ namespace Billing.API.Test
 
             var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/invoices/000000000000001");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjUxMjAxLCJ1bmlxdWVfbmFtZSI6ImFtb3NjaGluaUBtYWtpbmdzZW5zZS5jb20iLCJpc1N1IjpmYWxzZSwic3ViIjoiYW1vc2NoaW5pQG1ha2luZ3NlbnNlLmNvbSIsImN1c3RvbWVySWQiOm51bGwsImNkaF9jdXN0b21lcklkIjpudWxsLCJyb2xlIjoiVVNFUiIsImlhdCI6MTU5NDE1NjIzNSwiZXhwIjoxNTk0MTU4MDM1fQ.iZ40PoFgqmVXBGGBdUABmewvx6byKXaM9pIkJhdlsbcs9i4TUoXZrC0TaWq3-MrFneuVhOFBXy1n5Entr9_x1JGFu_9hpxuHbh266VvmcqmTDJUO0F3fR2tc-3nwPUQzWSTZC6ArJAdHpnXhB3ysvpZVi22l0dDUOeaHNbrQEkbHc61Zo4RlSU20HQSQQ2NJKw6wUfC3iOznHyTUTLFVlJ4REbTnbOzyUKZYyBKRy_aAseJbKphmT9Lh-mjgVsY3_S6WWHzczhk3eqmb8o8QJ3O_NbQxmHR964aRQutljFv_80cc5A61YbTtgmfoEsu-7HV2FaSZtztk6jesr-3rTg");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost/invoices/000000000000001");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
 
             // Act
             var response = await client.SendAsync(request);
