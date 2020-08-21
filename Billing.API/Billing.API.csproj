@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
     <NullableReferenceTypes>true</NullableReferenceTypes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AssemblyVersion>2020.7.30.0</AssemblyVersion>
-    <FileVersion>2020.7.30.0</FileVersion>
+    <AssemblyVersion>2020.8.20.3</AssemblyVersion>
+    <FileVersion>2020.8.20.3</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -20,6 +20,12 @@
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="3.1.7" />
     <PackageReference Include="Tavis.UriTemplates" Version="1.1.1" />
     <PackageReference Include="Z.ExtensionMethods" Version="2.1.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Sap.Data.Hana.Core.v2.1">
+      <HintPath>..\Sap.Data.Hana.Core.v2.1.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
