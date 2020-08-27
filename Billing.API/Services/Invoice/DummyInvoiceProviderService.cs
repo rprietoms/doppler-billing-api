@@ -31,9 +31,9 @@ namespace Billing.API.Services.Invoice
             });
         }
 
-        public Task TestSapConnection()
+        public async Task<string> TestSapConnection()
         {
-            throw new System.NotImplementedException();
+            return await Task.Run(() => "Successfull");
         }
     }
 }

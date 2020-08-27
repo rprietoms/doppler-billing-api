@@ -8,6 +8,6 @@ namespace Billing.API.Services.Invoice
     {
         Task<IEnumerable<InvoiceListItem>> GetInvoices(string clientId);
 
-        Task TestSapConnection();
+        Task<string> TestSapConnection();
     }
 }

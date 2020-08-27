@@ -34,9 +34,11 @@ namespace Billing.API.Controllers
         }
 
         [HttpGet("/invoices/test")]
-        public Task<IActionResult> TestSapConnection()
+        public async Task<IActionResult> TestSapConnection()
         {
-            return Task.FromResult<IActionResult>(Ok("Message"));
+            var response = await _invoiceService.TestSapConnection();
+
+            return Ok(response);
         }
     }
 }
