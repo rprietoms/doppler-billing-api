@@ -35,10 +35,10 @@ namespace Billing.API
 
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
-            if (env.IsDevelopment())
-            {
-                app.UseDeveloperExceptionPage();
-            }
+            //if (env.IsDevelopment())
+            // Removed the condition IsDevelopment so the errors are thrown directly to the client
+            // and it is easier to debug, consider restoring the old behavior in the future.
+            app.UseDeveloperExceptionPage();
 
             app.UseStaticFiles();
 
