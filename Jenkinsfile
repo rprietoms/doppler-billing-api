@@ -52,6 +52,14 @@ pipeline {
                 sh 'sh build-n-publish.sh --commit=${GIT_COMMIT} --name=INT'
             }
         }
+        stage('Publish pre-release images from PROD-TEST') {
+            when {
+                branch 'PRODTEST'
+            }
+            steps {
+                sh 'sh build-n-publish.sh --commit=${GIT_COMMIT} --name=PRODTEST'
+            }
+        }
         stage('Publish final version images') {
             when {
                 expression {
