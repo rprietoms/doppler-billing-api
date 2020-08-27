@@ -75,9 +75,34 @@ namespace Billing.API.Services.Invoice
             return items;
         }
 
-        public async Task TestSapConnection()
+        public async Task<string> TestSapConnection()
         {
-            await Task.Run(() => throw new NotImplementedException());
+            try
+            {
+                await using var conn = new HanaConnection(_options.Value.DbConnectionString);
+
+                await conn.OpenAsync();
+
+                var schema = _options.Value.Schema;
+
+                var query = $"select * from {schema}.oeml";
+
+                var da = new HanaDataAdapter(query, conn);
+
+                var dt = new DataTable("Invoices");
+
+                da.Fill(dt);
+
+                await conn.CloseAsync();
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error testing Hana connection");
+
+                return ex.Message;
+            }
+
+            return "Successfull";
         }
     }
 }
