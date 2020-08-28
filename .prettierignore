@@ -9,6 +9,7 @@
 **/*.binlog
 **/*.cs
 **/*.csproj
+**/*.dll
 **/*.http
 **/*.ico
 **/*.sh
