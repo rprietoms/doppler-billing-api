@@ -12,7 +12,7 @@
     "IIS Express": {
       "commandName": "IISExpress",
       "launchBrowser": true,
-      "launchUrl": "invoices/CD0000000073689",
+      "launchUrl": "accounts/doppler/73689/invoices",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       }
@@ -20,7 +20,7 @@
     "Billing.API": {
       "commandName": "Project",
       "launchBrowser": true,
-      "launchUrl": "invoices/CD0000000073689",
+      "launchUrl": "accounts/doppler/73689/invoices",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
       },

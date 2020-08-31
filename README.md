@@ -23,19 +23,13 @@ Authorization: Bearer {{token-jwt}}
             "currency": "ARS",
             "amount": 128,
             // There will probably be more data
-            "_links": [
-                {
-                    // TBD
-                    "rel": "file",
-                    "path?": "/accounts/doppler/22235/invoices?from=2020-02-01T00:00:00Z&to=2020-07-01T00:00:00Z"
-                }
-            ]
+            "link": "//path_on_server/filename.ext"
         },
         // . . .
     ],
+    //TBD
     "_links": [
         {
-           //TBD
             "rel": "next",
             "path?": "/accounts/doppler/22235/invoices?from=2020-02-01T00:00:00Z&to=2020-07-01T00:00:00Z"
         }

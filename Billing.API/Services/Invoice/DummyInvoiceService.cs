@@ -5,25 +5,26 @@ using Billing.API.Models;
 
 namespace Billing.API.Services.Invoice
 {
-    public class DummyInvoiceProviderService : IInvoiceService
+    public class DummyInvoiceService : IInvoiceService
     {
-        public async Task<IEnumerable<InvoiceListItem>> GetInvoices(string clientId)
+        public async Task<IEnumerable<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId)
         {
-            if (clientId.In("000000000000000", "999999999999999"))
-                return await Task.Run(() => new List<InvoiceListItem>());
+            if (clientId <= 0)
+                throw new ArgumentException();
 
-            return await Task.Run(() => new List<InvoiceListItem>()
+
+            return await Task.FromResult(new List<InvoiceListItem>
             {
                 new InvoiceListItem(
                     "Prod A",
-                    clientId,
+                    $"{clientPrefix}{clientId:0000000000000}",
                     DateTime.Today,
                     "ARS",
                     100,
                     "valid_path"),
                 new InvoiceListItem(
                     "Prod B",
-                    clientId,
+                    $"{clientPrefix}{clientId:0000000000000}",
                     DateTime.Today.AddDays(1),
                     "ARS",
                     200,
@@ -33,7 +34,7 @@ namespace Billing.API.Services.Invoice
 
         public async Task<string> TestSapConnection()
         {
-            return await Task.Run(() => "Successfull");
+            return await Task.FromResult("Successfull");
         }
     }
 }
