@@ -3,12 +3,12 @@ pipeline {
     stages {
         stage('Verify Format') {
             steps {
-                sh 'docker build --target verify-format .'
+                sh 'docker build --target verify-format --file Dockerfile.verify .'
             }
         }
         stage('Verify .sh files') {
             steps {
-                sh 'docker build --target verify-sh .'
+                sh 'docker build --target verify-sh --file Dockerfile.verify .'
             }
         }
         stage('Restore') {

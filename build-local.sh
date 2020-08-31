@@ -18,6 +18,10 @@ export MSYS2_ARG_CONV_EXCL="*"
 imageName=fromdoppler/doppler-billing-api
 
 docker build \
+    --file Dockerfile.verify \
+    .
+
+docker build \
     -t ${imageName}:local \
     --build-arg version="local-$(date +"%Y%m%d_%H%M")" \
     .
