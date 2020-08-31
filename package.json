@@ -6,9 +6,10 @@
     "prettier": "^2.1.0"
   },
   "scripts": {
-    "verify": "yarn prettier-check && yarn eclint-check",
-    "eclint-fix": "git ls-files | xargs eclint fix",
-    "eclint-check": "git ls-files | xargs eclint check",
+    "verify.bak": "yarn prettier-check && yarn eclint-check",
+    "verify": "yarn eclint-check",
+    "eclint-fix": "eclint fix",
+    "eclint-check": "eclint check",
     "prettier-fix": "prettier --write \"**/**\"",
     "prettier-check": "prettier --check \"**/**\""
   }
