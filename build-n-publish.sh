@@ -170,6 +170,10 @@ fi
 imageName=fromdoppler/doppler-billing-api
 
 docker build \
+    --file Dockerfile.verify \
+    .
+
+docker build \
     -t "${imageName}:${canonicalTag}" \
     --build-arg version="${versionFull}" \
     .

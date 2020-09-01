@@ -5,6 +5,7 @@ indent_style = space
 charset = utf-8
 trim_trailing_whitespace = true
 insert_final_newline = true
+end_of_line = lf
 
 
 [*.{xml,config,*proj,nuspec,props,resx,targets,yml,tasks}]
