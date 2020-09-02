@@ -55,5 +55,29 @@ jobs:
         DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       # By the moment it is building the merge commit, so github.sha is not a
       # commit in the PR branch
-      run: |
-        bash ./build-n-publish.sh --commit=${{ github.sha }} --name=pr-${{ github.event.number }} --platform=windows
+      run: bash ./build-n-publish.sh --commit=${{ github.sha }} --name=pr-${{ github.event.number }} --platform=windows
+    - name: Publish PRODTEST
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/PRODTEST' }}
+      env:
+        DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: bash ./build-n-publish.sh --commit=${{ github.sha }} --name=PRODTEST --platform=windows
+    - name: Publish INT
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/INT' }}
+      env:
+        DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: bash ./build-n-publish.sh --commit=${{ github.sha }} --name=INT --platform=windows
+    - name: Publish master
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      env:
+        DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: bash ./build-n-publish.sh --commit=${{ github.sha }} --name=master --platform=windows
+    - name: Publish final version images
+      if: ${{ github.event_name == 'push' && startsWith(github.ref,'refs/tags/v') }}
+      env:
+        DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+        GIT_REF: ${{ github.ref }}
+      run: bash ./build-n-publish.sh --commit=${{ github.sha }} --platform=windows
