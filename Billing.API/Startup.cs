@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Billing.API.DopplerSecurity;
 using Billing.API.Extensions;
 using Microsoft.AspNetCore.Authorization;
@@ -5,7 +6,6 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 namespace Billing.API
 {
@@ -28,7 +28,7 @@ namespace Billing.API
                 {
                     options.JsonSerializerOptions.WriteIndented = true;
                     options.JsonSerializerOptions.PropertyNameCaseInsensitive = false;
-                    options.JsonSerializerOptions.PropertyNamingPolicy = null!;
+                    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.CamelCase;
                 });
             services.AddCors();
         }

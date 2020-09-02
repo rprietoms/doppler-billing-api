@@ -49,7 +49,7 @@ namespace Billing.API.Test
         public async Task GetInvoices_WhenToken_ReturnsResponse(HttpStatusCode httpStatusCode, string token)
         {
             // Arrange
-            const string clientId = "000000000000001";
+            const int clientId = 1;
 
             _httpTest.RespondWithJson(string.Empty);
 
@@ -64,7 +64,7 @@ namespace Billing.API.Test
             appFactory.Server.PreserveExecutionContext = true;
             var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost/invoices/{clientId}");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost/accounts/doppler/{clientId}/invoices");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
             // Act
@@ -86,7 +86,7 @@ namespace Billing.API.Test
             appFactory.Server.PreserveExecutionContext = true;
             var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/invoices/000000000000001");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices");
 
             // Act
             var response = await client.SendAsync(request);
@@ -98,7 +98,7 @@ namespace Billing.API.Test
         }
 
         [Fact]
-        public async Task GetInvoices_ReturnsFile()
+        public async Task GetInvoices_ReturnsData()
         {
             // Arrange
             using var appFactory = _factory.WithBypassAuthorization()
@@ -109,7 +109,7 @@ namespace Billing.API.Test
             appFactory.Server.PreserveExecutionContext = true;
             var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/invoices/000000000000001");
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices");
 
             // Act
             var response = await client.SendAsync(request);
@@ -130,7 +130,7 @@ namespace Billing.API.Test
 
             var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost/invoices/000000000000001");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost/accounts/doppler/1/invoices");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
 
             // Act
@@ -148,7 +148,7 @@ namespace Billing.API.Test
                 .CreateClient();
 
             // Act
-            var response = await client.GetAsync("https://custom.domain.com/invoices/000000000000001");
+            var response = await client.GetAsync("https://custom.domain.com/accounts/doppler/1/invoices");
 
             // Assert
             var authenticateHeader = Assert.Single(response.Headers.WwwAuthenticate);
@@ -162,7 +162,7 @@ namespace Billing.API.Test
         {
             // Arrange
             var client = _factory.CreateClient();
-            var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/invoices/000000000000001");
+            var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/accounts/doppler/1/invoices");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjg4NDY5LCJ1bmlxdWVfbmFtZSI6ImFtb3NjaGluaUBtYWtpbmdzZW5zZS5jb20iLCJpc1N1IjpmYWxzZSwic3ViIjoiYW1vc2NoaW5pQG1ha2luZ3NlbnNlLmNvbSIsImN1c3RvbWVySWQiOiIxMzY3IiwiY2RoX2N1c3RvbWVySWQiOiIxMzY3Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE1OTQxNTUwMjYsImV4cCI6MTU5NDE1NjgyNn0.a4eVqSBptPJk0y9V5Id1yXEzkSroX7j9712W6HOYzb-9irc3pVFQrdWboHcZPLlbpHUdsuoHmFOU-l14N_CjVF9mwjz0Qp9x88JP2KD1x8YtlxUl4BkIneX6ODQ5q_hDeQX-yIUGoU2-cIXzle-JzRssg-XIbaf34fXnUSiUGnQRAuWg3IkmpeLu9fVSbYrY-qW1os1gBSq4NEESz4T87hJblJv3HWNQFJxAtvhG4MLX2ITm8vYNtX39pwI5gdkLY7bNzWmJ1Uphz1hR-sdCdM2oUWKmRmL7txsoD04w5ca7YbdHQGwCI92We4muOs0-N7a4JHYjuDM9lL_TbJGw2w");
 
             // Act
@@ -183,7 +183,7 @@ namespace Billing.API.Test
             var client = _factory.CreateClient();
 
             // Act
-            var response = await client.GetAsync("https://custom.domain.com/Invoices/");
+            var response = await client.GetAsync("https://localhost/accounts/doppler/invoices");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

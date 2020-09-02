@@ -21,7 +21,7 @@ namespace Billing.API.Services.Invoice
             _options = options;
         }
 
-        public async Task<IEnumerable<InvoiceListItem>> GetInvoices(string clientId)
+        public async Task<IEnumerable<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId)
         {
             var schema = _options.Value.Schema;
 
@@ -55,7 +55,7 @@ namespace Billing.API.Services.Invoice
             query += $"         GROUP BY T0.\"DocEntry\" ) x ON x.\"DocEntry\" = T0.\"DocEntry\" AND x.\"SendTime\" = T0.\"SendTime\"";
             query += $" WHERE";
             query += $"     T0.\"ObjType\" = '13'";
-            query += $" AND T0.\"CardCode\" LIKE '%{clientId}%'";
+            query += $" AND (T0.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR T0.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%')";
 
             var da = new HanaDataAdapter(query, conn);
 
@@ -65,14 +65,13 @@ namespace Billing.API.Services.Invoice
 
             await conn.CloseAsync();
 
-            var items = new List<InvoiceListItem>();
-
-            if (dt.Rows.Count > 0)
-            {
-                items.AddRange(Enumerable.Select(dt.AsEnumerable(), dr => new InvoiceListItem(dr.Field<string>("DocEntry"), dr.Field<string>("CardCode"), dr.Field<DateTime>("SendDate"), dr.Field<string>("DocCur"), dr.Field<decimal>("DocTotal").ToDouble(), $"{dr.Field<string>("trgtPath")}\\{dr.Field<string>("FileName")}.{dr.Field<string>("FileExt")}")));
-            }
-
-            return items;
+            return dt.AsEnumerable().Select(dr => new InvoiceListItem(
+                clientPrefix,
+                clientId.ToString(),
+                dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
+                dr.Field<string>("DocCur"),
+                dr.Field<decimal>("DocTotal").ToDouble(),
+                $"{dr.Field<string>("trgtPath")}\\{dr.Field<string>("FileName")}.{dr.Field<string>("FileExt")}")).ToList();
         }
 
         public async Task<string> TestSapConnection()

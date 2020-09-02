@@ -27,12 +27,9 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("")]
-        [InlineData("00000000000000")]
-        [InlineData("0000000000000000")]
-        [InlineData("000000000000000")]
-        [InlineData("999999999999999")]
-        public async Task GetInvoices_InexistentClient_ReturnsNotFound(string clientId)
+        [InlineData("", 0)]
+        [InlineData("", 1)]
+        public async Task GetInvoices_InexistentClient_ReturnsNotFound(string origin, int clientId)
         {
             // Arrange
             var appFactory = _factory.WithBypassAuthorization();
@@ -40,7 +37,7 @@ namespace Billing.API.Test
             var client = appFactory.CreateClient();
 
             // Act
-            var response = await client.GetAsync($"https://custom.domain.com/invoices/{clientId}");
+            var response = await client.GetAsync($"https://custom.domain.com/accounts/{origin}/{clientId}/invoices");
 
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);

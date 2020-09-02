@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Threading.Tasks;
 using Billing.API.Services.Invoice;
 using Microsoft.AspNetCore.Authorization;
@@ -20,20 +19,39 @@ namespace Billing.API.Controllers
             _invoiceService = invoiceService;
         }
 
-        [HttpGet("/invoices/{clientId:length(15)}")]
-        public async Task<IActionResult> GetInvoices([FromRoute] string clientId)
+        [HttpGet("/accounts/{origin}/{clientId:int:min(0)}/invoices/")]
+        public async Task<IActionResult> GetInvoices([FromRoute] string origin, [FromRoute] int clientId)
         {
-            _logger.LogDebug("Getting invoices for client {0}", clientId);
+            _logger.LogDebug("Getting invoices for {0} client {1}", origin, clientId);
 
-            var response = await _invoiceService.GetInvoices(clientId);
+            string clientPrefix;
 
-            if (response == null || !response.Any())
-                return NotFound();
+            switch (origin.ToLowerInvariant())
+            {
+                case "doppler":
+                    clientPrefix = "CD";
+                    break;
+                case "relay":
+                    clientPrefix = "CR";
+                    break;
+                case "clientmanager":
+                    clientPrefix = "CM";
+                    break;
+                default:
+                    return BadRequest();
+            }
 
-            return Ok(response);
+            var response = await _invoiceService.GetInvoices(clientPrefix, clientId);
+
+            var list = new
+            {
+                Invoices = response
+            };
+
+            return Ok(list);
         }
 
-        [HttpGet("/invoices/test")]
+        [HttpGet("/testSap")]
         public async Task<IActionResult> TestSapConnection()
         {
             var response = await _invoiceService.TestSapConnection();

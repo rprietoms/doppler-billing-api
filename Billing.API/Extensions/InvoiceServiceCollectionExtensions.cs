@@ -10,7 +10,7 @@ namespace Billing.API.Extensions
         {
             services.ConfigureOptions<ConfigureInvoiceProviderOptions>();
 
-            services.AddSingleton<DummyInvoiceProviderService>();
+            services.AddSingleton<DummyInvoiceService>();
             services.AddTransient<InvoiceService>();
 
             services.AddTransient(serviceProvider =>
@@ -18,7 +18,7 @@ namespace Billing.API.Extensions
                 var invoiceProviderOptions = serviceProvider.GetRequiredService<IOptions<InvoiceProviderOptions>>();
 
                 return invoiceProviderOptions.Value.UseDummyData
-                    ? (IInvoiceService)serviceProvider.GetRequiredService<DummyInvoiceProviderService>()
+                    ? (IInvoiceService)serviceProvider.GetRequiredService<DummyInvoiceService>()
                     : serviceProvider.GetRequiredService<InvoiceService>();
             });
 
