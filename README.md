@@ -5,7 +5,17 @@ invoices PDF.
 
 ## Continuous Deployment to test and production environments
 
-We are following the same criteria than [DopplerForms](https://github.com/MakingSense/doppler-forms/blob/master/README.md#continuous-deployment-to-test-and-production-environments).
+We are following the same criteria than
+[DopplerForms](https://github.com/MakingSense/doppler-forms/blob/master/README.md#continuous-deployment-to-test-and-production-environments).
+
+But, since this project should be run on Windows containers, we are also
+building and publishing this using GitHub Actions.
+
+Docker Hub credentials are stored in the [FromDoppler's organization
+secret](https://github.com/organizations/FromDoppler/settings/secrets)
+`DOCKERHUB_USERNAME` and `DOCKERHUB_PASSWORD`.
+
+GitHub Actions only run build process in PRs from branches in the main fork.
 
 ## API draft
 

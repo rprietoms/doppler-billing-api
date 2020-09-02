@@ -1,0 +1,27 @@
+name: Build and publish Windows-based Docker image
+
+on:
+
+  pull_request:
+
+jobs:
+
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Verify code format (requires Linux containers)
+      run: docker build --file Dockerfile.verify .
+
+  build:
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - name: Publish pull request
+      env:
+        DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      # By the moment it is building the merge commit, so github.sha is not a
+      # commit in the PR branch
+      run: |
+        bash ./build-n-publish.sh --commit=${{ github.sha }} --name=pr-${{ github.event.number }} --platform=windows
