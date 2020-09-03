@@ -6,6 +6,11 @@ version=""
 versionPre=""
 platform="linux"
 
+if [ -n "${GIT_REF}" ]
+then
+  version="${GIT_REF#refs/tags/}"
+fi
+
 print_help () {
     echo ""
     echo "Usage: sh build-n-publish.sh [OPTIONS]"
@@ -15,7 +20,7 @@ print_help () {
     echo "Options:"
     echo "  -c, --commit (mandatory)"
     echo "  -n, --name"
-    echo "  -v, --version"
+    echo "  -v, --version (or set GIT_REF environment variable, ie: '/refs/tags/v0.0.14')"
     echo "  -s, --pre-version-suffix (optional, only with version)"
     echo "  -p, --platform (optional, default linux)"
     echo "  -h, --help"
