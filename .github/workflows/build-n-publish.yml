@@ -2,6 +2,11 @@ name: Build and publish Windows-based Docker image
 
 on:
 
+  push:
+    branches:
+      - master
+      - INT
+      - PRODTEST
   pull_request:
 
 jobs:
@@ -26,8 +31,27 @@ jobs:
     - name: Test
       run: docker build --target test .
     - name: Publish pre-release image from pull request
+      if: ${{ github.event_name == 'pull_request' }}
       env:
         DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
         DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
       # By the moment it is building the merge commit, so github.sha is not a commit in the PR branch
       run: bash ./build-n-publish.sh --commit=${{ github.sha }} --name=pr-${{ github.event.number }} --platform=windows
+    - name: Publish pre-release image from PRODTEST
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/PRODTEST' }}
+      env:
+        DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: bash ./build-n-publish.sh --commit=${{ github.sha }} --name=PRODTEST --platform=windows
+    - name: Publish pre-release image from INT
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/INT' }}
+      env:
+        DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: bash ./build-n-publish.sh --commit=${{ github.sha }} --name=INT --platform=windows
+    - name: Publish pre-release image from master
+      if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/master' }}
+      env:
+        DOCKER_WRITTER_USERNAME: ${{ secrets.DOCKERHUB_USERNAME }}
+        DOCKER_WRITTER_PASSWORD: ${{ secrets.DOCKERHUB_PASSWORD }}
+      run: bash ./build-n-publish.sh --commit=${{ github.sha }} --name=master --platform=windows
