@@ -1,0 +1,27 @@
+name: Build and publish Windows-based Docker image
+
+on:
+
+  pull_request:
+
+jobs:
+
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Verify code format (Linux Docker required)
+      run: docker build --target verify-format --file Dockerfile.verify .
+    - name: Verify .sh files (Linux Docker required)
+      run: docker build --target verify-sh --file Dockerfile.verify .
+
+  build:
+    runs-on: windows-2019
+    steps:
+    - uses: actions/checkout@v2
+    - name: Restore
+      run: docker build --target restore .
+    - name: Build
+      run: docker build --target build .
+    - name: Test
+      run: docker build --target test .
