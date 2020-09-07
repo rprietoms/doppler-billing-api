@@ -7,8 +7,8 @@
     <Nullable>enable</Nullable>
     <NullableReferenceTypes>true</NullableReferenceTypes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-    <AssemblyVersion>2020.9.1.15</AssemblyVersion>
-    <FileVersion>2020.9.1.15</FileVersion>
+    <AssemblyVersion>2020.9.9.9</AssemblyVersion>
+    <FileVersion>2020.9.9.9</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
@@ -39,6 +39,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="public-keys\doppler_prod.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="sample.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>

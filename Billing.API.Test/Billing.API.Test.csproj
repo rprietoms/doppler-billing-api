@@ -7,8 +7,8 @@
     <NullableReferenceTypes>true</NullableReferenceTypes>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <IsPackable>false</IsPackable>
-    <AssemblyVersion>2020.9.1.13</AssemblyVersion>
-    <FileVersion>2020.9.1.13</FileVersion>
+    <AssemblyVersion>2020.9.9.23</AssemblyVersion>
+    <FileVersion>2020.9.9.23</FileVersion>
   </PropertyGroup>
 
   <ItemGroup>
@@ -24,6 +24,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Billing.API\Billing.API.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="sample.pdf">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
