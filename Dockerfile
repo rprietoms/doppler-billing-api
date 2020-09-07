@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/core/sdk:3.1 AS restore
+FROM mcr.microsoft.com/dotnet/core/sdk:3.0 AS restore
 WORKDIR /src
 COPY ./Billing.sln ./
 COPY Billing.API/Billing.API.csproj ./Billing.API/
@@ -18,7 +18,7 @@ RUN dotnet test
 FROM build AS publish
 RUN dotnet publish "Billing.API/Billing.API.csproj" -c Release -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/core/aspnet:3.1 AS final
+FROM mcr.microsoft.com/dotnet/core/aspnet:3.0-nanoserver-sac2016 AS final
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
