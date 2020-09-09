@@ -3,13 +3,10 @@ WORKDIR /src
 COPY ./Billing.sln ./
 COPY Billing.API/Billing.API.csproj ./Billing.API/
 COPY Billing.API.Test/Billing.API.Test.csproj ./Billing.API.Test/
-COPY ./.config/dotnet-tools.json ./.config/
-RUN dotnet tool restore
 RUN dotnet restore
 
 FROM restore AS build
 COPY . .
-RUN dotnet dotnet-format --check
 RUN dotnet build -c Release
 
 FROM build AS test
