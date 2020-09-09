@@ -14,7 +14,7 @@ namespace Billing.API.DopplerSecurity
         private readonly IConfiguration _configuration;
         private readonly IFileProvider _fileProvider;
 
-        public ConfigureDopplerSecurityOptions(IConfiguration configuration, IWebHostEnvironment webHostEnvironment)
+        public ConfigureDopplerSecurityOptions(IConfiguration configuration, IHostingEnvironment webHostEnvironment)
         {
             _configuration = configuration;
             _fileProvider = webHostEnvironment.ContentRootFileProvider;
@@ -22,17 +22,21 @@ namespace Billing.API.DopplerSecurity
 
         private static string ReadToEnd(IFileInfo fileInfo)
         {
-            using var stream = fileInfo.CreateReadStream();
-            using var reader = new StreamReader(stream);
-            return reader.ReadToEnd();
+            using (var stream = fileInfo.CreateReadStream())
+            using (var reader = new StreamReader(stream))
+            {
+                return reader.ReadToEnd();
+            }
         }
 
         private static RsaSecurityKey ParseXmlString(string xmlString)
         {
-            using var rsaProvider = new RSACryptoServiceProvider();
-            rsaProvider.FromXmlString(xmlString);
-            var rsaParameters = rsaProvider.ExportParameters(false);
-            return new RsaSecurityKey(RSA.Create(rsaParameters));
+            using (var rsaProvider = new RSACryptoServiceProvider())
+            {
+                rsaProvider.FromXmlStringAlt(xmlString);
+                var rsaParameters = rsaProvider.ExportParameters(false);
+                return new RsaSecurityKey(RSA.Create(rsaParameters));
+            }
         }
 
         public void Configure(DopplerSecurityOptions options)

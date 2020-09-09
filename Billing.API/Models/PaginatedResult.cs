@@ -14,7 +14,7 @@ namespace Billing.API.Models
         /// <summary>
         /// List of paginated items
         /// </summary>
-        public List<T>? Items { get; set; }
+        public List<T> Items { get; set; }
 
         /// <summary>
         /// Total of items

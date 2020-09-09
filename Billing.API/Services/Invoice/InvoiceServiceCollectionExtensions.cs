@@ -1,8 +1,7 @@
 using Billing.API.Services.Invoice;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace Billing.API.Extensions
+namespace Microsoft.Extensions.DependencyInjection
 {
     public static class InvoiceServiceCollectionExtensions
     {
