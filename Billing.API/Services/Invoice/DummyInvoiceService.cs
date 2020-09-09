@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 using Billing.API.Models;
 
@@ -30,6 +31,13 @@ namespace Billing.API.Services.Invoice
                     200,
                     "valid_path_b")
             });
+        }
+
+        public Task<byte[]?> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
+        {
+            var bytes = File.ReadAllBytes("sample.pdf");
+
+            return Task.FromResult(bytes)!;
         }
 
         public async Task<string> TestSapConnection()

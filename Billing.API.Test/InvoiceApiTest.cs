@@ -188,5 +188,96 @@ namespace Billing.API.Test
             // Assert
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
+
+        [Fact]
+        public async Task GetInvoice_ShouldReturnPdfFileContents()
+        {
+            // Arrange
+            using var appFactory = _factory.WithBypassAuthorization()
+                .AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+            var client = appFactory.CreateClient();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoice/invoice_2020-01-01_123.pdf");
+
+            // Act
+            var response = await client.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal("application/pdf", response.Content.Headers.ContentType.MediaType);
+            Assert.NotNull(content);
+        }
+
+        [Fact]
+        public async Task GetInvoice_WhenInvalidClientOrigin_ReturnsBadRequest()
+        {
+            // Arrange
+            using var appFactory = _factory.WithBypassAuthorization()
+                .AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+            var client = appFactory.CreateClient();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/invalid_origin/1/invoice/filename.ext");
+
+            // Act
+            var response = await client.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.NotNull(content);
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetInvoice_WhenInvalidClientId_ReturnsNotFound()
+        {
+            // Arrange
+            using var appFactory = _factory.WithBypassAuthorization()
+                .AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+            var client = appFactory.CreateClient();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/0/invoice/invoice_2020-01-01_123.pdf");
+
+            // Act
+            var response = await client.SendAsync(request);
+            var content = await response.Content.ReadAsStringAsync();
+
+            // Assert
+            Assert.NotNull(content);
+            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        }
+
+        [Fact]
+        public async Task GetInvoice_WhenWrongFilePattern_ReturnsBadRequest()
+        {
+            // Arrange
+            using var appFactory = _factory.WithBypassAuthorization()
+                .AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+            var client = appFactory.CreateClient();
+
+            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoice/whatever.ext");
+
+            // Act
+            var response = await client.SendAsync(request);
+
+            // Assert
+            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        }
     }
 }
