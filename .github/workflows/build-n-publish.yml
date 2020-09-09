@@ -2,14 +2,15 @@ name: Build and publish Windows-based Docker image
 
 on:
 
-  push:
-    branches:
-      - master
-      - INT
-      - PRODTEST
-    tags:
-      - 'v[0-9]+.[0-9]+.[0-9]+*'
-  pull_request:
+# Commented because we are not generating official builds with GitHub Actions
+#  push:
+#    branches:
+#      - master
+#      - INT
+#      - PRODTEST
+#    tags:
+#      - 'v[0-9]+.[0-9]+.[0-9]+*'
+#  pull_request:
 
 jobs:
 
