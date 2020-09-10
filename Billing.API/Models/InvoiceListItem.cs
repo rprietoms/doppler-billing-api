@@ -9,9 +9,9 @@ namespace Billing.API.Models
         public DateTimeOffset Date { get; }
         public string Currency { get; }
         public double Amount { get; }
-        public string Link { get; }
+        public string Filename { get; }
 
-        public InvoiceListItem(string product, string accountId, DateTimeOffset date, string currency, double amount, string link)
+        public InvoiceListItem(string product, string accountId, DateTimeOffset date, string currency, double amount, string filename)
         {
             Product = product.EqualsIgnoreCase("CD") ? "Doppler"
                 : product.EqualsIgnoreCase("CR") ? "Relay"
@@ -21,7 +21,7 @@ namespace Billing.API.Models
             Date = date;
             Currency = currency;
             Amount = amount;
-            Link = link;
+            Filename = filename;
         }
     }
 }
