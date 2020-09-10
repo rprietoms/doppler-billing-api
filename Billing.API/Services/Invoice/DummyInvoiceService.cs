@@ -39,7 +39,7 @@ namespace Billing.API.Services.Invoice
                 DateTime.Today,
                 "ARS",
                 100,
-                $"valid_path_{x}")
+                $"111111/invoice/invoice_2020-09-03_198.pdf")
             ).ToList();
 
             var paginatedInvoices = invoices;
