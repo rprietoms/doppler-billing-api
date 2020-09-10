@@ -22,17 +22,26 @@ namespace Billing.API.Services.Invoice
             _options = options;
         }
 
-        public async Task<IEnumerable<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId)
+        public async Task<PaginatedResult<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId, int page, int pageSize)
         {
             var dt = await GetInvoiceRecords(clientPrefix, clientId);
-
-            return dt.AsEnumerable().Select(dr => new InvoiceListItem(
+            var invoices = dt.AsEnumerable().Select(dr => new InvoiceListItem(
                 clientPrefix,
                 clientId.ToString(),
                 dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
                 dr.Field<string>("DocCur"),
                 dr.Field<decimal>("DocTotal").ToDouble(),
                 $"invoice_{dr.Field<DateTime>("SendDate"):yyyy-MM-dd}_{dr.Field<int>("AbsEntry")}.{dr.Field<string>("FileExt")}")).ToList();
+
+            //TODO: When we can get the data from database we will try to move the pagination into the sql query
+            var paginatedInvoices = invoices;
+
+            if ((page > 0) && (pageSize > 0))
+            {
+                paginatedInvoices = invoices.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+            }
+
+            return new PaginatedResult<InvoiceListItem> { Items = paginatedInvoices, TotalItems = invoices.Count };
         }
 
         public async Task<byte[]?> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
