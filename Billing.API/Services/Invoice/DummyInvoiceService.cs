@@ -36,10 +36,10 @@ namespace Billing.API.Services.Invoice
             var invoices = Enumerable.Range(1, 50).Select(x => new InvoiceListItem(
                 $"Prod {x}",
                 $"{clientPrefix}{clientId:0000000000000}",
-                DateTime.Today,
+                DateTime.Today.AddDays(x),
                 "ARS",
                 100,
-                $"valid_path_{x}")
+                $"invoice_{DateTime.Today.AddDays(x):yyyy-MM-dd}_{x}.pdf")
             ).ToList();
 
             var paginatedInvoices = invoices;

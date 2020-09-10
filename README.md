@@ -33,7 +33,7 @@ Authorization: Bearer {{token-jwt}}
             "currency": "ARS",
             "amount": 128,
             // There will probably be more data
-            "link": "//path_on_server/filename.ext"
+            "filename": "filename.ext"
         },
         // . . .
     ],
