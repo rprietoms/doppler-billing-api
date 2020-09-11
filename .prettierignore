@@ -19,7 +19,8 @@
 **/bin/**
 **/obj/**
 **/Properties/launchSettings.json
-Dockerfile
+Dockerfile**
+**/*.pdf
 Jenkinsfile
 yarn.lock
 *.[sS]ecret.*

@@ -25,7 +25,8 @@ namespace Billing.API.Services.Invoice
         public async Task<PaginatedResult<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId, int page, int pageSize)
         {
             var dt = await GetInvoiceRecords(clientPrefix, clientId);
-            var invoices = dt.AsEnumerable().Select(dr => new InvoiceListItem(
+
+            var invoices = dt.Select().Select(dr => new InvoiceListItem(
                 clientPrefix,
                 clientId.ToString(),
                 dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
@@ -44,11 +45,11 @@ namespace Billing.API.Services.Invoice
             return new PaginatedResult<InvoiceListItem> { Items = paginatedInvoices, TotalItems = invoices.Count };
         }
 
-        public async Task<byte[]?> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
+        public async Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
         {
             var dt = await GetInvoiceRecords(clientPrefix, clientId, fileId);
 
-            var dr = dt.AsEnumerable().FirstOrDefault();
+            var dr = dt.Select().FirstOrDefault();
 
             if (dr == null)
                 return null;
@@ -62,21 +63,23 @@ namespace Billing.API.Services.Invoice
         {
             try
             {
-                await using var conn = new HanaConnection(_options.Value.DbConnectionString);
+                using (var conn = new HanaConnection(_options.Value.DbConnectionString))
+                {
 
-                await conn.OpenAsync();
+                    conn.Open();
 
-                var schema = _options.Value.Schema;
+                    var schema = _options.Value.Schema;
 
-                var query = $"select * from {schema}.oeml";
+                    var query = $"select * from {schema}.oeml";
 
-                var da = new HanaDataAdapter(query, conn);
+                    var da = new HanaDataAdapter(query, conn);
 
-                var dt = new DataTable("Invoices");
+                    var dt = new DataTable("Invoices");
 
-                da.Fill(dt);
+                    da.Fill(dt);
 
-                await conn.CloseAsync();
+                    conn.Close();
+                }
             }
             catch (Exception ex)
             {
@@ -88,57 +91,58 @@ namespace Billing.API.Services.Invoice
             return "Successfull";
         }
 
-        private async Task<DataTable> GetInvoiceRecords(string? clientPrefix, int? clientId, int? fileId = null)
+        private async Task<DataTable> GetInvoiceRecords(string clientPrefix, int? clientId, int? fileId = null)
         {
             var schema = _options.Value.Schema;
 
-            await using var conn = new HanaConnection(_options.Value.DbConnectionString);
+            using (var conn = new HanaConnection(_options.Value.DbConnectionString))
+            {
+                conn.Open();
 
-            await conn.OpenAsync();
+                var query = string.Empty;
 
-            var query = string.Empty;
+                query += $" SELECT DISTINCT";
+                query += $"     T0.\"AbsEntry\" ,";
+                query += $"     T0.\"CardCode\" ,";
+                query += $"     T0.\"CardName\" ,";
+                query += $"     T0.\"SendDate\" ,";
+                query += $"     T0.\"SendTime\" ,";
+                query += $"     cast(T0.\"DocEntry\" AS NVARCHAR) AS \"DocEntry\" ,";
+                query += $"     T2.\"DocTotal\" ,";
+                query += $"     T2.\"PaidToDate\" ,";
+                query += $"     cast(T2.\"DocCur\" AS NVARCHAR)   AS \"DocCur\" ,";
+                query += $"     cast(T1.\"trgtPath\" AS NVARCHAR) AS \"trgtPath\" ,";
+                query += $"     cast(T1.\"FileName\" AS NVARCHAR) AS \"FileName\" ,";
+                query += $"     cast(T1.\"FileExt\" AS NVARCHAR)  AS \"FileExt\" ";
+                query += $" FROM";
+                query += $"     {schema}.oeml T0 ";
+                query += $"     INNER JOIN {schema}.ATC1 T1 ON T0.\"AtcEntry\" = T1.\"AbsEntry\" ";
+                query += $"     INNER JOIN {schema}.OINV T2 ON T0.\"DocEntry\" = T2.\"DocNum\" ";
+                query += $"     INNER JOIN ( SELECT";
+                query += $"         T0.\"DocEntry\" ,";
+                query += $"         min(T0.\"SendTime\") AS \"SendTime\" ";
+                query += $"         FROM {schema}.oeml T0 ";
+                query += $"         WHERE T0.\"ObjType\" = '13' ";
+                query += $"         GROUP BY T0.\"DocEntry\" ) x ON x.\"DocEntry\" = T0.\"DocEntry\" AND x.\"SendTime\" = T0.\"SendTime\"";
+                query += $" WHERE";
+                query += $"     T0.\"ObjType\" = '13'";
 
-            query += $" SELECT DISTINCT";
-            query += $"     T0.\"AbsEntry\" ,";
-            query += $"     T0.\"CardCode\" ,";
-            query += $"     T0.\"CardName\" ,";
-            query += $"     T0.\"SendDate\" ,";
-            query += $"     T0.\"SendTime\" ,";
-            query += $"     cast(T0.\"DocEntry\" AS NVARCHAR) AS \"DocEntry\" ,";
-            query += $"     T2.\"DocTotal\" ,";
-            query += $"     T2.\"PaidToDate\" ,";
-            query += $"     cast(T2.\"DocCur\" AS NVARCHAR)   AS \"DocCur\" ,";
-            query += $"     cast(T1.\"trgtPath\" AS NVARCHAR) AS \"trgtPath\" ,";
-            query += $"     cast(T1.\"FileName\" AS NVARCHAR) AS \"FileName\" ,";
-            query += $"     cast(T1.\"FileExt\" AS NVARCHAR)  AS \"FileExt\" ";
-            query += $" FROM";
-            query += $"     {schema}.oeml T0 ";
-            query += $"     INNER JOIN {schema}.ATC1 T1 ON T0.\"AtcEntry\" = T1.\"AbsEntry\" ";
-            query += $"     INNER JOIN {schema}.OINV T2 ON T0.\"DocEntry\" = T2.\"DocNum\" ";
-            query += $"     INNER JOIN ( SELECT";
-            query += $"         T0.\"DocEntry\" ,";
-            query += $"         min(T0.\"SendTime\") AS \"SendTime\" ";
-            query += $"         FROM {schema}.oeml T0 ";
-            query += $"         WHERE T0.\"ObjType\" = '13' ";
-            query += $"         GROUP BY T0.\"DocEntry\" ) x ON x.\"DocEntry\" = T0.\"DocEntry\" AND x.\"SendTime\" = T0.\"SendTime\"";
-            query += $" WHERE";
-            query += $"     T0.\"ObjType\" = '13'";
+                if (clientPrefix.IsNotNullOrEmpty() && clientId.HasValue)
+                    query += $" AND (T0.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR T0.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%')";
 
-            if (clientPrefix.IsNotNullOrEmpty() && clientId.HasValue)
-                query += $" AND (T0.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR T0.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%')";
+                if (fileId.HasValue)
+                    query += $" AND (T0.\"AbsEntry\" = '{fileId}')";
 
-            if (fileId.HasValue)
-                query += $" AND (T0.\"AbsEntry\" = '{fileId}')";
+                var da = new HanaDataAdapter(query, conn);
 
-            var da = new HanaDataAdapter(query, conn);
+                var dt = new DataTable("Invoices");
 
-            var dt = new DataTable("Invoices");
+                da.Fill(dt);
 
-            da.Fill(dt);
+                conn.Close();
 
-            await conn.CloseAsync();
-
-            return dt;
+                return dt;
+            }
         }
     }
 }

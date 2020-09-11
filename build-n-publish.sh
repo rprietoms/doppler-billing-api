@@ -200,7 +200,8 @@ docker build \
     .
 
 # TODO: It could break concurrent deployments with different docker accounts
-docker login -u="${DOCKER_WRITTER_USERNAME}" -p="${DOCKER_WRITTER_PASSWORD}"
+# Using /dev/null because PowerShell (in AppVeyor) detects logged warnings as errors
+docker login -u="${DOCKER_WRITTER_USERNAME}" -p="${DOCKER_WRITTER_PASSWORD}" 2> /dev/null
 
 if [ -n "${version}" ]
 then

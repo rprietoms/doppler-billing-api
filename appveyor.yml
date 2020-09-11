@@ -1,0 +1,46 @@
+version: 0.0.{build}
+image: Visual Studio 2017
+build: off
+test: off
+deploy: off
+skip_branch_with_pr: true
+environment:
+  TEST:
+    secure: sUrXRaSNWZJ154sh4iOCjg==
+  DOCKER_WRITTER_USERNAME: dnoyawritter
+  DOCKER_WRITTER_PASSWORD:
+    secure: CPdmv2DSokphYiqiE8eii4mz2v4exefw8SuWbRmgvStOFRsl0RkpdAfHgYnlci57
+
+for:
+  - branches:
+      only:
+        - master
+        - INT
+        - PRODTEST
+    skip_non_tags: false
+    skip_tags: true
+    build_script:
+      - ps: |
+          if ("$env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT" -eq "")
+          {
+            # It is a branch
+            sh ./build-n-publish.sh --commit="$env:APPVEYOR_REPO_COMMIT" --name="$env:APPVEYOR_REPO_BRANCH" --platform=windows
+          }
+          elseif ("$env:DOCKER_WRITTER_PASSWORD" -ne "")
+          {
+            # It is a PR with access to our secrets
+            sh ./build-n-publish.sh --commit="$env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT" --name=pr-"$env:APPVEYOR_PULL_REQUEST_NUMBER" --platform=windows
+          }
+          else
+          {
+            # It is a PR without access to our secrets
+            echo "WARNING! Docker Hub credentials are not available, only building without pushing"
+            docker build .
+          }
+  - branches:
+      only:
+        - /v\d+\.\d+\.\d+.*/
+    skip_non_tags: true
+    skip_tags: false
+    build_script:
+      - ps: sh ./build-n-publish.sh --commit="$env:APPVEYOR_REPO_COMMIT" --version="$env:APPVEYOR_REPO_TAG_NAME" --platform=windows

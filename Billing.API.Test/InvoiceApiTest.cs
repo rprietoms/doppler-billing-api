@@ -53,70 +53,76 @@ namespace Billing.API.Test
 
             _httpTest.RespondWithJson(string.Empty);
 
-            using var appFactory = _factory.WithDisabledLifeTimeValidation()
-                .AddConfiguration(new Dictionary<string, string>
+            using (var appFactory = _factory.WithDisabledLifeTimeValidation())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
                 {
                     ["Invoice:UseDummyData"] = "true",
                     ["Invoice:Host"] = "localhost",
                     ["Invoice:UserName"] = "someUser",
                     ["Invoice:Password"] = "somePass"
                 });
-            appFactory.Server.PreserveExecutionContext = true;
-            var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost/accounts/doppler/{clientId}/invoices");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+                var client = appFactory.CreateClient();
 
-            // Act
-            var response = await client.SendAsync(request);
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://localhost/accounts/doppler/{clientId}/invoices");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
 
-            // Assert
-            Assert.Equal(httpStatusCode, response.StatusCode);
+                // Act
+                var response = await client.SendAsync(request);
+
+                // Assert
+                Assert.Equal(httpStatusCode, response.StatusCode);
+            }
         }
 
         [Fact]
         public async Task GetInvoices_WhenDummyDataIsTrue_ShouldNotCallBackend_ReturnsOk()
         {
             // Arrange
-            using var appFactory = _factory.WithBypassAuthorization()
-                .AddConfiguration(new Dictionary<string, string>
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
                 {
                     ["Invoice:UseDummyData"] = "true"
                 });
-            appFactory.Server.PreserveExecutionContext = true;
-            var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices");
+                var client = appFactory.CreateClient();
 
-            // Act
-            var response = await client.SendAsync(request);
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices");
 
-            // Assert
-            _httpTest.ShouldNotHaveMadeACall();
+                // Act
+                var response = await client.SendAsync(request);
 
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                // Assert
+                _httpTest.ShouldNotHaveMadeACall();
+
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            }
         }
 
         [Fact]
         public async Task GetInvoices_ReturnsData()
         {
             // Arrange
-            using var appFactory = _factory.WithBypassAuthorization()
-                .AddConfiguration(new Dictionary<string, string>
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
                 {
                     ["Invoice:UseDummyData"] = "true"
                 });
-            appFactory.Server.PreserveExecutionContext = true;
-            var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices");
+                var client = appFactory.CreateClient();
 
-            // Act
-            var response = await client.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices");
 
-            // Assert
-            Assert.NotNull(content);
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.NotNull(content);
+            }
         }
 
         [Fact]
@@ -126,7 +132,6 @@ namespace Billing.API.Test
             _httpTest.RespondWithJson(string.Empty);
 
             var appFactory = _factory.WithDisabledLifeTimeValidation();
-            appFactory.Server.PreserveExecutionContext = true;
 
             var client = appFactory.CreateClient();
 
@@ -172,7 +177,7 @@ namespace Billing.API.Test
             var authenticateHeader = Assert.Single(response.Headers.WwwAuthenticate);
             Assert.Equal("Bearer", authenticateHeader.Scheme);
             Assert.Contains("error=\"invalid_token\"", authenticateHeader.Parameter);
-            Assert.Contains("error_description=\"The token expired at ", authenticateHeader.Parameter);
+            Assert.Contains("error_description=\"The token is expired", authenticateHeader.Parameter);
             Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
         }
 
@@ -193,91 +198,99 @@ namespace Billing.API.Test
         public async Task GetInvoice_ShouldReturnPdfFileContents()
         {
             // Arrange
-            using var appFactory = _factory.WithBypassAuthorization()
-                .AddConfiguration(new Dictionary<string, string>
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
                 {
                     ["Invoice:UseDummyData"] = "true"
                 });
 
-            var client = appFactory.CreateClient();
+                var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoice/invoice_2020-01-01_123.pdf");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoice/invoice_2020-01-01_123.pdf");
 
-            // Act
-            var response = await client.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
 
-            // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("application/pdf", response.Content.Headers.ContentType.MediaType);
-            Assert.NotNull(content);
+                // Assert
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                Assert.Equal("application/pdf", response.Content.Headers.ContentType.MediaType);
+                Assert.NotNull(content);
+            }
         }
 
         [Fact]
         public async Task GetInvoice_WhenInvalidClientOrigin_ReturnsBadRequest()
         {
             // Arrange
-            using var appFactory = _factory.WithBypassAuthorization()
-                .AddConfiguration(new Dictionary<string, string>
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
                 {
                     ["Invoice:UseDummyData"] = "true"
                 });
 
-            var client = appFactory.CreateClient();
+                var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/invalid_origin/1/invoice/filename.ext");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/invalid_origin/1/invoice/filename.ext");
 
-            // Act
-            var response = await client.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
 
-            // Assert
-            Assert.NotNull(content);
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                // Assert
+                Assert.NotNull(content);
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            }
         }
 
         [Fact]
         public async Task GetInvoice_WhenInvalidClientId_ReturnsNotFound()
         {
             // Arrange
-            using var appFactory = _factory.WithBypassAuthorization()
-                .AddConfiguration(new Dictionary<string, string>
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
                 {
                     ["Invoice:UseDummyData"] = "true"
                 });
 
-            var client = appFactory.CreateClient();
+                var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/0/invoice/invoice_2020-01-01_123.pdf");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/0/invoice/invoice_2020-01-01_123.pdf");
 
-            // Act
-            var response = await client.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
 
-            // Assert
-            Assert.NotNull(content);
-            Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+                // Assert
+                Assert.NotNull(content);
+                Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+            }
         }
 
         [Fact]
         public async Task GetInvoice_WhenWrongFilePattern_ReturnsBadRequest()
         {
             // Arrange
-            using var appFactory = _factory.WithBypassAuthorization()
-                .AddConfiguration(new Dictionary<string, string>
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
                 {
                     ["Invoice:UseDummyData"] = "true"
                 });
 
-            var client = appFactory.CreateClient();
+                var client = appFactory.CreateClient();
 
-            var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoice/whatever.ext");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoice/whatever.ext");
 
-            // Act
-            var response = await client.SendAsync(request);
+                // Act
+                var response = await client.SendAsync(request);
 
-            // Assert
-            Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                // Assert
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+            }
         }
     }
 }

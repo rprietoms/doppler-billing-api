@@ -19,11 +19,11 @@ namespace Billing.API.Services.Invoice
             return await Task.FromResult(invoices);
         }
 
-        public Task<byte[]?> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
+        public Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
         {
             var bytes = File.ReadAllBytes("sample.pdf");
 
-            return Task.FromResult(bytes)!;
+            return Task.FromResult(bytes);
         }
 
         public async Task<string> TestSapConnection()
