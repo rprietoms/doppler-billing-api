@@ -44,7 +44,7 @@ namespace Billing.API.Services.Invoice
             return new PaginatedResult<InvoiceListItem> { Items = paginatedInvoices, TotalItems = invoices.Count };
         }
 
-        public async Task<byte[]?> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
+        public async Task<InvoiceFile?> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
         {
             var dt = await GetInvoiceRecords(clientPrefix, clientId, fileId);
 
@@ -54,8 +54,9 @@ namespace Billing.API.Services.Invoice
                 return null;
 
             var link = $"{dr.Field<string>("trgtPath")}\\{dr.Field<string>("FileName")}.{dr.Field<string>("FileExt")}";
+            var response = await File.ReadAllBytesAsync(link);
 
-            return await File.ReadAllBytesAsync(link);
+            return new InvoiceFile { Content = response, ContentType = "application/pdf" };
         }
 
         public async Task<string> TestSapConnection()

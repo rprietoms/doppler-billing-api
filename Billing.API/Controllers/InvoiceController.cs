@@ -1,5 +1,6 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Billing.API.Models;
 using Billing.API.Services.Invoice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -55,7 +56,7 @@ namespace Billing.API.Controllers
             if (response == null)
                 return NotFound();
 
-            return File(response, "application/pdf", filename);
+            return Ok(response);
         }
 
         [HttpGet("/testSap")]

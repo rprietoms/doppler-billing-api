@@ -1,6 +1,8 @@
 using AutoFixture.Xunit2;
+using Billing.API.Models;
 using Flurl.Http.Testing;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
@@ -205,12 +207,13 @@ namespace Billing.API.Test
 
             // Act
             var response = await client.SendAsync(request);
-            var content = await response.Content.ReadAsStringAsync();
+            var jsonResult = await response.Content.ReadAsStringAsync();
+            var invoiceFile = JsonConvert.DeserializeObject<InvoiceFile>(jsonResult);
 
             // Assert
             Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-            Assert.Equal("application/pdf", response.Content.Headers.ContentType.MediaType);
-            Assert.NotNull(content);
+            Assert.Equal("application/pdf", invoiceFile.ContentType);
+            Assert.NotNull(invoiceFile.Content);
         }
 
         [Fact]
