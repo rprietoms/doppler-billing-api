@@ -37,6 +37,8 @@ namespace Billing.API
                 .AllowAnyMethod()
                 .AllowCredentials());
 
+            app.UseStaticFiles();
+
             app.UseMvc();
         }
     }
