@@ -177,8 +177,6 @@ then
   canonicalTag=${versionFull}
 fi
 
-versionFull=${name}-${commit}-${platform}
-
 platformSufix=""
 if [ "${platform}" != "linux" ]
 then
@@ -196,7 +194,7 @@ fi
 
 docker build \
     -t "${imageName}:${canonicalTag}${platformSufix}" \
-    --build-arg version="${versionFull}" \
+    --build-arg version="${versionFull}-${platform}" \
     .
 
 # TODO: It could break concurrent deployments with different docker accounts
