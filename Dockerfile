@@ -22,6 +22,5 @@ EXPOSE 80
 EXPOSE 443
 COPY --from=publish /app/publish .
 COPY ./libadonetHDB.dll .
-ARG version=unknown
-RUN echo $version > /app/wwwroot/version.txt
+COPY ./wwwroot_extras/ /app/wwwroot/
 ENTRYPOINT ["dotnet", "Billing.API.dll"]
