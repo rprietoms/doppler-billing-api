@@ -192,9 +192,10 @@ then
       .
 fi
 
+echo "${versionFull}-${platform}" > wwwroot_extras/version.txt
+
 docker build \
     -t "${imageName}:${canonicalTag}${platformSufix}" \
-    --build-arg version="${versionFull}-${platform}" \
     .
 
 # TODO: It could break concurrent deployments with different docker accounts
