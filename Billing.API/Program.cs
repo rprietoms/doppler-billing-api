@@ -36,6 +36,14 @@ namespace Billing.API
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureAppConfiguration((hostingContext, config) =>
+                {
+                    config.AddJsonFile("appsettings.Secret.json", true);
+                    config.AddJsonFile("C:\\ProgramData\\Docker\\secrets\\appsettings.Secret.json", true);
+                    config.AddJsonFile("/run/secrets/appsettings.Secret.json", true);
+                    config.AddKeyPerFile("C:\\ProgramData\\Docker\\secrets", true);
+                    config.AddKeyPerFile("/run/secrets", true);
+                })
                 .UseStartup<Startup>();
     }
 }
