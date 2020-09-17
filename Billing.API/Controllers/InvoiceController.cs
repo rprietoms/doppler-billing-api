@@ -23,14 +23,19 @@ namespace Billing.API.Controllers
         }
 
         [HttpGet("/accounts/{origin}/{clientId:int:min(0)}/invoices/")]
-        public async Task<IActionResult> GetInvoices([FromRoute] string origin, [FromRoute] int clientId, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetInvoices([FromRoute] string origin,
+            [FromRoute] int clientId,
+            [FromQuery] int page = 1,
+            [FromQuery] int pageSize = 10,
+            [FromQuery] string sortColumn = "AccountId",
+            [FromQuery] bool sortAsc = true)
         {
             _logger.LogDebug("Getting invoices for {0} client {1}", origin, clientId);
 
             if (!TryGetClientPrefix(origin, out var clientPrefix))
                 return BadRequest();
 
-            var response = await _invoiceService.GetInvoices(clientPrefix, clientId, page, pageSize);
+            var response = await _invoiceService.GetInvoices(clientPrefix, clientId, page, pageSize, sortColumn, sortAsc);
 
             return Ok(response);
         }

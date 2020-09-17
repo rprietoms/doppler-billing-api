@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Billing.API.Models;
 using Microsoft.Extensions.Logging;
@@ -22,7 +23,7 @@ namespace Billing.API.Services.Invoice
             _options = options;
         }
 
-        public async Task<PaginatedResult<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId, int page, int pageSize)
+        public async Task<PaginatedResult<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId, int page, int pageSize, string sortColumn, bool sortAsc)
         {
             var dt = await GetInvoiceRecords(clientPrefix, clientId);
 
@@ -36,6 +37,8 @@ namespace Billing.API.Services.Invoice
 
             //TODO: When we can get the data from database we will try to move the pagination into the sql query
             var paginatedInvoices = invoices;
+
+            invoices = GetInvoicesSorted(invoices, sortColumn, sortAsc);
 
             if ((page > 0) && (pageSize > 0))
             {
@@ -89,6 +92,19 @@ namespace Billing.API.Services.Invoice
             }
 
             return "Successfull";
+        }
+
+        private List<InvoiceListItem> GetInvoicesSorted(List<InvoiceListItem> invoices, string sortColumn, bool sortAsc)
+        {
+            var property = typeof(InvoiceListItem).GetProperty(sortColumn, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) ?? typeof(InvoiceListItem).GetProperty("AccountId");
+
+            if (property != null)
+            {
+                return sortAsc ? invoices.OrderBy(x => property.GetValue(x, null)).ToList()
+                    : invoices.OrderByDescending(x => property.GetValue(x, null)).ToList();
+            }
+
+            return invoices;
         }
 
         private async Task<DataTable> GetInvoiceRecords(string clientPrefix, int? clientId, int? fileId = null)
