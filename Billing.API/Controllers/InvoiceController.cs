@@ -35,8 +35,10 @@ namespace Billing.API.Controllers
             return Ok(response);
         }
 
-        [HttpGet("/accounts/{origin}/{clientId:int:min(1)}/invoice/{filename}")]
-        public async Task<IActionResult> GetInvoices([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename)
+        [HttpGet]
+        [Route("/accounts/{origin}/{clientId:int:min(1)}/invoice/{filename}")] //Deprecated route
+        [Route("/accounts/{origin}/{clientId:int:min(1)}/invoices/{filename}")]
+        public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename)
         {
             _logger.LogDebug("Getting invoice for {0} client {1} filename {2}", origin, clientId, filename);
 

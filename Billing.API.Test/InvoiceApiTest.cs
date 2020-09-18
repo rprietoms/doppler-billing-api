@@ -194,8 +194,10 @@ namespace Billing.API.Test
             Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         }
 
-        [Fact]
-        public async Task GetInvoice_ShouldReturnPdfFileContents()
+        [Theory]
+        [InlineData("accounts/doppler/1/invoice/invoice_2020-01-01_123.pdf")] //Deprecated route
+        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf")]
+        public async Task GetInvoiceFile_ShouldReturnPdfFileContents(string path)
         {
             // Arrange
             using (var appFactory = _factory.WithBypassAuthorization())
@@ -207,7 +209,7 @@ namespace Billing.API.Test
 
                 var client = appFactory.CreateClient();
 
-                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoice/invoice_2020-01-01_123.pdf");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/{path}");
 
                 // Act
                 var response = await client.SendAsync(request);
@@ -221,7 +223,7 @@ namespace Billing.API.Test
         }
 
         [Fact]
-        public async Task GetInvoice_WhenInvalidClientOrigin_ReturnsBadRequest()
+        public async Task GetInvoiceFile_WhenInvalidClientOrigin_ReturnsBadRequest()
         {
             // Arrange
             using (var appFactory = _factory.WithBypassAuthorization())
@@ -246,7 +248,7 @@ namespace Billing.API.Test
         }
 
         [Fact]
-        public async Task GetInvoice_WhenInvalidClientId_ReturnsNotFound()
+        public async Task GetInvoiceFile_WhenInvalidClientId_ReturnsNotFound()
         {
             // Arrange
             using (var appFactory = _factory.WithBypassAuthorization())
@@ -271,7 +273,7 @@ namespace Billing.API.Test
         }
 
         [Fact]
-        public async Task GetInvoice_WhenWrongFilePattern_ReturnsBadRequest()
+        public async Task GetInvoiceFile_WhenWrongFilePattern_ReturnsBadRequest()
         {
             // Arrange
             using (var appFactory = _factory.WithBypassAuthorization())
