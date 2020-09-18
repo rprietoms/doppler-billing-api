@@ -7,6 +7,8 @@ using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using Billing.API.Models;
+using Newtonsoft.Json;
 using Xunit;
 
 namespace Billing.API.Test
@@ -98,6 +100,147 @@ namespace Billing.API.Test
                 _httpTest.ShouldNotHaveMadeACall();
 
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            }
+        }
+
+        [Fact]
+        public async Task GetInvoices_WhenDummyDataIsTrue_Should_Sort_By_Product_Asc_When_OrderAsc_is_not_Passed_As_Parameter()
+        {
+            // Arrange
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+                var client = appFactory.CreateClient();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/accounts/doppler/1/invoices?sortColumn=Product");
+
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PaginatedResult<InvoiceListItem>>(content);
+
+                // Assert
+                _httpTest.ShouldNotHaveMadeACall();
+
+                Assert.Collection(result.Items,
+                    invoice1 => Assert.Equal("Prod 1", invoice1.Product),
+                    invoice2 => Assert.Equal("Prod 10", invoice2.Product),
+                    invoice3 => Assert.Equal("Prod 11", invoice3.Product),
+                    invoice4 => Assert.Equal("Prod 12", invoice4.Product),
+                    invoice5 => Assert.Equal("Prod 13", invoice5.Product),
+                    invoice6 => Assert.Equal("Prod 14", invoice6.Product),
+                    invoice7 => Assert.Equal("Prod 15", invoice7.Product),
+                    invoice8 => Assert.Equal("Prod 16", invoice8.Product),
+                    invoice9 => Assert.Equal("Prod 17", invoice9.Product),
+                    invoice10 => Assert.Equal("Prod 18", invoice10.Product));
+            }
+        }
+
+        [Fact]
+        public async Task GetInvoices_WhenDummyDataIsTrue_Should_Sort_By_Product_Desc_When_OrderAsc_is_False()
+        {
+            // Arrange
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+                var client = appFactory.CreateClient();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/accounts/doppler/1/invoices?sortColumn=Product&sortAsc=false");
+
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PaginatedResult<InvoiceListItem>>(content);
+
+                // Assert
+                _httpTest.ShouldNotHaveMadeACall();
+
+                Assert.Collection(result.Items,
+                    invoice1 => Assert.Equal("Prod 9", invoice1.Product),
+                    invoice2 => Assert.Equal("Prod 8", invoice2.Product),
+                    invoice3 => Assert.Equal("Prod 7", invoice3.Product),
+                    invoice4 => Assert.Equal("Prod 6", invoice4.Product),
+                    invoice5 => Assert.Equal("Prod 50", invoice5.Product),
+                    invoice6 => Assert.Equal("Prod 5", invoice6.Product),
+                    invoice7 => Assert.Equal("Prod 49", invoice7.Product),
+                    invoice8 => Assert.Equal("Prod 48", invoice8.Product),
+                    invoice9 => Assert.Equal("Prod 47", invoice9.Product),
+                    invoice10 => Assert.Equal("Prod 46", invoice10.Product));
+            }
+        }
+
+        [Fact]
+        public async Task GetInvoices_WhenDummyDataIsTrue_Should_Sort_By_Default_When_sortColumn_And_sortAsc_Are_Empty()
+        {
+            // Arrange
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+                var client = appFactory.CreateClient();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/accounts/doppler/1/invoices?pageSize=2");
+
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PaginatedResult<InvoiceListItem>>(content);
+
+                // Assert
+                _httpTest.ShouldNotHaveMadeACall();
+
+                Assert.Equal(2, result.Items.Count);
+                Assert.Collection(result.Items,
+                    invoice1 => Assert.Equal("CD0000000000001", invoice1.AccountId),
+                    invoice2 => Assert.Equal("CD0000000000001", invoice2.AccountId));
+            }
+        }
+
+        [Fact]
+        public async Task GetInvoices_WhenDummyDataIsTrue_Should_Sort_By_Product_Asc_When_Page_is_2()
+        {
+            // Arrange
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+                var client = appFactory.CreateClient();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/accounts/doppler/1/invoices?page=2&sortColumn=Product&sortAsc=true");
+
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PaginatedResult<InvoiceListItem>>(content);
+
+                // Assert
+                _httpTest.ShouldNotHaveMadeACall();
+
+                Assert.Collection(result.Items,
+                    invoice1 => Assert.Equal("Prod 19", invoice1.Product),
+                    invoice2 => Assert.Equal("Prod 2", invoice2.Product),
+                    invoice3 => Assert.Equal("Prod 20", invoice3.Product),
+                    invoice4 => Assert.Equal("Prod 21", invoice4.Product),
+                    invoice5 => Assert.Equal("Prod 22", invoice5.Product),
+                    invoice6 => Assert.Equal("Prod 23", invoice6.Product),
+                    invoice7 => Assert.Equal("Prod 24", invoice7.Product),
+                    invoice8 => Assert.Equal("Prod 25", invoice8.Product),
+                    invoice9 => Assert.Equal("Prod 26", invoice9.Product),
+                    invoice10 => Assert.Equal("Prod 27", invoice10.Product));
             }
         }
 
