@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Billing.API.Models;
 using Microsoft.Extensions.Logging;
@@ -33,19 +33,19 @@ namespace Billing.API.Services.Invoice
                 dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
                 dr.Field<string>("DocCur"),
                 dr.Field<decimal>("DocTotal").ToDouble(),
-                $"invoice_{dr.Field<DateTime>("SendDate"):yyyy-MM-dd}_{dr.Field<int>("AbsEntry")}.{dr.Field<string>("FileExt")}")).ToList();
+                $"invoice_{dr.Field<DateTime>("SendDate"):yyyy-MM-dd}_{dr.Field<int>("AbsEntry")}.{dr.Field<string>("FileExt")}"))
+                .AsQueryable();
 
             //TODO: When we can get the data from database we will try to move the pagination into the sql query
-            var paginatedInvoices = invoices;
-
-            invoices = GetInvoicesSorted(invoices, sortColumn, sortAsc);
+            var invoiceSorted = GetInvoicesSorted(invoices, sortColumn, sortAsc).ToList();
+            var paginatedInvoices = invoiceSorted;
 
             if ((page > 0) && (pageSize > 0))
             {
-                paginatedInvoices = invoices.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                paginatedInvoices = invoiceSorted.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             }
 
-            return new PaginatedResult<InvoiceListItem> { Items = paginatedInvoices, TotalItems = invoices.Count };
+            return new PaginatedResult<InvoiceListItem> { Items = paginatedInvoices, TotalItems = invoiceSorted.Count };
         }
 
         public async Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
@@ -94,17 +94,9 @@ namespace Billing.API.Services.Invoice
             return "Successfull";
         }
 
-        private List<InvoiceListItem> GetInvoicesSorted(List<InvoiceListItem> invoices, string sortColumn, bool sortAsc)
+        private static IEnumerable<InvoiceListItem> GetInvoicesSorted(IQueryable<InvoiceListItem> invoices, string sortColumn, bool sortAsc)
         {
-            var property = typeof(InvoiceListItem).GetProperty(sortColumn, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) ?? typeof(InvoiceListItem).GetProperty("AccountId");
-
-            if (property != null)
-            {
-                return sortAsc ? invoices.OrderBy(x => property.GetValue(x, null)).ToList()
-                    : invoices.OrderByDescending(x => property.GetValue(x, null)).ToList();
-            }
-
-            return invoices;
+            return invoices.OrderBy(sortColumn + (!sortAsc ? " descending" : ""));
         }
 
         private async Task<DataTable> GetInvoiceRecords(string clientPrefix, int? clientId, int? fileId = null)

@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
+using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
 using Billing.API.Models;
 
@@ -29,7 +29,7 @@ namespace Billing.API.Services.Invoice
 
         public async Task<string> TestSapConnection()
         {
-            return await Task.FromResult("Successfull");
+            return await Task.FromResult("Successful");
         }
 
         private PaginatedResult<InvoiceListItem> GetDummyInvoices(string clientPrefix, int clientId, int page, int pageSize, string sortColumn, bool sortAsc)
@@ -41,31 +41,22 @@ namespace Billing.API.Services.Invoice
                 "ARS",
                 100,
                 $"invoice_{DateTime.Today.AddDays(x):yyyy-MM-dd}_{x}.pdf")
-            ).ToList();
+            ).AsQueryable();
 
-            var paginatedInvoices = invoices;
-
-            invoices = GetInvoicesSorted(invoices, sortColumn, sortAsc);
+            var invoiceSorted = GetInvoicesSorted(invoices, sortColumn, sortAsc).ToList();
+            var paginatedInvoices = invoiceSorted;
 
             if ((page > 0) && (pageSize > 0))
             {
-                paginatedInvoices = invoices.Skip((page - 1) * pageSize).Take(pageSize).ToList();
+                paginatedInvoices = invoiceSorted.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             }
 
-            return new PaginatedResult<InvoiceListItem> { Items = paginatedInvoices, TotalItems = invoices.Count };
+            return new PaginatedResult<InvoiceListItem> { Items = paginatedInvoices, TotalItems = invoiceSorted.Count };
         }
 
-        private List<InvoiceListItem> GetInvoicesSorted(List<InvoiceListItem> invoices, string sortColumn, bool sortAsc)
+        private static IEnumerable<InvoiceListItem> GetInvoicesSorted(IQueryable<InvoiceListItem> invoices, string sortColumn, bool sortAsc)
         {
-            var property = typeof(InvoiceListItem).GetProperty(sortColumn, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance) ?? typeof(InvoiceListItem).GetProperty("AccountId");
-
-            if (property != null)
-            {
-                return sortAsc ? invoices.OrderBy(x => property.GetValue(x, null)).ToList()
-                    : invoices.OrderByDescending(x => property.GetValue(x, null)).ToList();
-            }
-
-            return invoices;
+            return invoices.OrderBy(sortColumn + (!sortAsc ? " descending" : ""));
         }
     }
 }
