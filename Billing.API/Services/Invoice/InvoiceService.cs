@@ -125,7 +125,7 @@ namespace Billing.API.Services.Invoice
                 query += $" FROM";
                 query += $"     {schema}.oeml T0 ";
                 query += $"     INNER JOIN {schema}.ATC1 T1 ON T0.\"AtcEntry\" = T1.\"AbsEntry\" ";
-                query += $"     INNER JOIN {schema}.OINV T2 ON T0.\"DocEntry\" = T2.\"DocNum\" ";
+                query += $"     INNER JOIN {schema}.OINV T2 ON T0.\"DocNum\" = T2.\"DocNum\" ";
                 query += $"     INNER JOIN ( SELECT";
                 query += $"         T0.\"DocEntry\" ,";
                 query += $"         min(T0.\"SendTime\") AS \"SendTime\" ";
