@@ -10,7 +10,7 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddDopplerSecurity(this IServiceCollection services)
         {
-            services.AddSingleton<IAuthorizationHandler, IsSuperUserHandler>();
+            services.AddSingleton<IAuthorizationHandler, CanAccessUserHandler>();
             services.ConfigureOptions<ConfigureDopplerSecurityOptions>();
 
             services
@@ -19,7 +19,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     o.DefaultPolicy = new AuthorizationPolicyBuilder()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                        .AddRequirements(new IsSuperUserRequirement())
+                        .AddRequirements(new CanAccessUserRequirement())
                         .RequireAuthenticatedUser()
                         .Build();
                 });
