@@ -25,7 +25,7 @@ namespace Billing.API.DopplerSecurity
                 var resource = context.Resource as Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext;
                 if (resource.RouteData.Values.TryGetValue("clientId", out var clientId) && clientId.ToString() != tokenUserId)
                 {
-                    _logger.LogWarning("The token Id and route Id are differents. The user hasn't permissions.");
+                    _logger.LogWarning("The IdUser into the token is different that in the route. The user hasn't permissions.");
                     return Task.CompletedTask;
                 }
                 // TODO: check token Issuer information, to validate right origin
