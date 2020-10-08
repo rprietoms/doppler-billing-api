@@ -1,3 +1,4 @@
+using Billing.API.DopplerSecurity;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
@@ -19,6 +20,9 @@ namespace Billing.API
         {
             services.AddDopplerSecurity();
             services.AddInvoiceService();
+
+            services.AddTransient<CryptoHelper>();
+
             services.AddCors();
             // TODO: configure JSON to indent the results
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);

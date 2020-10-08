@@ -1,9 +1,12 @@
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Billing.API.DopplerSecurity;
+using Billing.API.Models;
 using Billing.API.Services.Invoice;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Billing.API.Controllers
 {
@@ -15,11 +18,15 @@ namespace Billing.API.Controllers
 
         private readonly ILogger<InvoiceController> _logger;
         private readonly IInvoiceService _invoiceService;
+        private readonly CryptoHelper _cryptoHelper;
+        private readonly IOptions<InvoiceProviderOptions> _options;
 
-        public InvoiceController(ILogger<InvoiceController> logger, IInvoiceService invoiceService)
+        public InvoiceController(ILogger<InvoiceController> logger, IInvoiceService invoiceService, CryptoHelper cryptoHelper, IOptions<InvoiceProviderOptions> options)
         {
             _logger = logger;
             _invoiceService = invoiceService;
+            _cryptoHelper = cryptoHelper;
+            _options = options;
         }
 
         [HttpGet("/accounts/{origin}/{clientId:int:min(0)}/invoices/")]
@@ -37,13 +44,22 @@ namespace Billing.API.Controllers
 
             var response = await _invoiceService.GetInvoices(clientPrefix, clientId, page, pageSize, sortColumn, sortAsc);
 
+            foreach (var invoice in response.Items)
+            {
+                invoice.Links.Add(new Link
+                {
+                    Rel = "file",
+                    Href = $"{_options.Value.BaseUrl}/accounts/{origin}/{clientId}/invoices/{invoice.Filename}?s={_cryptoHelper.GenerateInvoiceSign($"{clientPrefix}{clientId}{invoice.FileId}")}",
+                    Description = "Download invoice"
+                });
+            }
+
             return Ok(response);
         }
 
         [HttpGet]
-        [Route("/accounts/{origin}/{clientId:int:min(1)}/invoice/{filename}")] //Deprecated route
         [Route("/accounts/{origin}/{clientId:int:min(1)}/invoices/{filename}")]
-        public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename)
+        public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename, [FromQuery(Name = "s")] string signature)
         {
             _logger.LogDebug("Getting invoice for {0} client {1} filename {2}", origin, clientId, filename);
 

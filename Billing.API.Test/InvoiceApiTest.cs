@@ -338,8 +338,7 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("accounts/doppler/1/invoice/invoice_2020-01-01_123.pdf")] //Deprecated route
-        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf")]
+        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?signature=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgKuV0")]
         public async Task GetInvoiceFile_ShouldReturnPdfFileContents(string path)
         {
             // Arrange
@@ -378,7 +377,7 @@ namespace Billing.API.Test
 
                 var client = appFactory.CreateClient();
 
-                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/invalid_origin/1/invoice/filename.ext");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/invalid_origin/1/invoices/filename.ext?s=123456");
 
                 // Act
                 var response = await client.SendAsync(request);
@@ -403,7 +402,7 @@ namespace Billing.API.Test
 
                 var client = appFactory.CreateClient();
 
-                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/0/invoice/invoice_2020-01-01_123.pdf");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/0/invoices/invoice_2020-01-01_123.pdf?s=123456");
 
                 // Act
                 var response = await client.SendAsync(request);
@@ -428,7 +427,7 @@ namespace Billing.API.Test
 
                 var client = appFactory.CreateClient();
 
-                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoice/whatever.ext");
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices/whatever.ext");
 
                 // Act
                 var response = await client.SendAsync(request);
