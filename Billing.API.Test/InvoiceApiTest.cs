@@ -1,14 +1,14 @@
 using AutoFixture.Xunit2;
+using Billing.API.Models;
 using Flurl.Http.Testing;
 using Microsoft.AspNetCore.Mvc.Testing;
+using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using Billing.API.Models;
-using Newtonsoft.Json;
 using Xunit;
 
 namespace Billing.API.Test
@@ -48,10 +48,11 @@ namespace Billing.API.Test
         [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ3MDksImV4cCI6MTU5Nzc2NDcxOSwiaWF0IjoxNTk3NzY0NzA5LCJpc1NVIjpmYWxzZX0.K7khi_qhvj0eF3ahZzNcRkzrRPDFR_q-5xAujSeFG3GaFhJIhgARX7fsA4iPPhTJtFA1oqF54d-vyNhGAhBDFzSKUHyRegdRJ5FiQwcQ537PbZUfCc702sEi-MjzfpkP1PZrk0Zrn5-ybUDJi-6qjia8_YxvA4px8KGPT10Z6PnrpeCuWtESmMlSre7CgCRpydXZ0XkV0hsn-CD8p5oSV9iMCXS3npJBBhzLvw9B_LienlnJQMVs88ykSDqZNUWdGMVTO4QF4JChd67W7B9I0MmmbtgCZ5yo0EwykYR6RaZYihtKjesmHlBcFaHJc1C-3V8TQ3L0-81PpemqZd_3yQ")]
         [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1NzcsImV4cCI6MTU5Nzc2NDU4NywiaWF0IjoxNTk3NzY0NTc3fQ.S3qzN2kCR7VtrkCG-FTq_Hrv377Fn8wevryAhHHKq5SupMsEaa1SYAdNZdlMLZyyZQUe95UYM4_Ba63Kbm9zu6fkh_xKfmLGbiZhEjJM5nVR0HLa7mAPTNY25YrfRtQRyyLvLDJ1KSXIY_iUd1IT1hQAIqMG7pD29eD6RY4_n_z619AgET94F_Jj7w505JvNNR7z5fpW5ZM1XaEPlrCbXVfCKtLLxM8YlNRBOmyJRG2ideaRfqEw7vb3AIW6c4EdHV1c9EBsYGfWkSJZOOpXKoOpUmvhVLmxpctTNNq_iS67JE3AFlkatboq9z8l9DHDIdoveIE6unHq4YgUmltnDg")]
         [InlineData(HttpStatusCode.Unauthorized, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9")]
+        [InlineData(HttpStatusCode.OK, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjIyMjU0MSwidW5pcXVlX25hbWUiOiJiYW1hcm9AbWFraW5nc2Vuc2UuY29tIiwiaXNTdSI6ZmFsc2UsInN1YiI6ImJhbWFyb0BtYWtpbmdzZW5zZS5jb20iLCJjdXN0b21lcklkIjpudWxsLCJjZGhfY3VzdG9tZXJJZCI6bnVsbCwicm9sZSI6IlVTRVIiLCJpYXQiOjE2MDE5MTgyNzYsImV4cCI6MTYwMTkyMDA3Nn0.8J3SwjqB0GoTw3RwCeYwR9jAE_hZUnJ-1ooYYczl-JoBXBZYNxWjMpXl_JbYjC07rl0FW8lN1pas5ENWTA8WszDCTGSAu4YSFXcikleYOpddtuXBRGouM2PzRTWDm2ANY8yAScwVL0uzP3cG3u3819GYNWzoN1oC0rnDRvGmh2wXTid_mE-ZBq-DMuxnB1ivC1Ji728FfGtUkB0T8Qu9mYQnRCaNof8K47eWntko1kWG7LDxA83up3KxK-qhwnEwnNZQvhxneL8Q5SV5-qjtXfwn_8PBVGSqRZoc0tqeALfolzycCwlobmV9opYgbjqmgDQENBIyKV4kPfm8QS4JYg")]
         public async Task GetInvoices_WhenToken_ReturnsResponse(HttpStatusCode httpStatusCode, string token)
         {
             // Arrange
-            const int clientId = 1;
+            const int clientId = 222541;
 
             _httpTest.RespondWithJson(string.Empty);
 
