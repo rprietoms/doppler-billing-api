@@ -19,7 +19,7 @@ namespace Billing.API.Services.Invoice
 
         public InvoiceService(ILogger<InvoiceService> logger, IOptions<InvoiceProviderOptions> options)
         {
-            _logger = logger;
+            _logger  = logger;
             _options = options;
         }
 
@@ -33,7 +33,8 @@ namespace Billing.API.Services.Invoice
                 dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
                 dr.Field<string>("DocCur"),
                 dr.Field<decimal>("DocTotal").ToDouble(),
-                $"invoice_{dr.Field<DateTime>("SendDate"):yyyy-MM-dd}_{dr.Field<int>("AbsEntry")}.{dr.Field<string>("FileExt")}"))
+                $"invoice_{dr.Field<DateTime>("SendDate"):yyyy-MM-dd}_{dr.Field<int>("AbsEntry")}.{dr.Field<string>("FileExt")}",
+                dr.Field<int>("AbsEntry")))
                 .AsQueryable();
 
             //TODO: When we can get the data from database we will try to move the pagination into the sql query

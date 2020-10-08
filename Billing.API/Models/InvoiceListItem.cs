@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace Billing.API.Models
 {
@@ -9,9 +11,16 @@ namespace Billing.API.Models
         public DateTimeOffset Date { get; }
         public string Currency { get; }
         public double Amount { get; }
+
+        [JsonIgnore]
+        public int FileId { get; }
+
         public string Filename { get; }
 
-        public InvoiceListItem(string product, string accountId, DateTimeOffset date, string currency, double amount, string filename)
+        [JsonProperty(PropertyName = "_links")]
+        public List<Link> Links { get; } = new List<Link>();
+
+        public InvoiceListItem(string product, string accountId, DateTimeOffset date, string currency, double amount, string filename, int fileId)
         {
             Product = product.EqualsIgnoreCase("CD") ? "Doppler"
                 : product.EqualsIgnoreCase("CR") ? "Relay"
@@ -22,6 +31,7 @@ namespace Billing.API.Models
             Currency = currency;
             Amount = amount;
             Filename = filename;
+            FileId = fileId;
         }
     }
 }

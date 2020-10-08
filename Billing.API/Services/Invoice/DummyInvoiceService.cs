@@ -4,12 +4,23 @@ using System.IO;
 using System.Linq;
 using System.Linq.Dynamic.Core;
 using System.Threading.Tasks;
+using Billing.API.DopplerSecurity;
 using Billing.API.Models;
+using Microsoft.Extensions.Options;
 
 namespace Billing.API.Services.Invoice
 {
     public class DummyInvoiceService : IInvoiceService
     {
+        private readonly CryptoHelper _cryptoHelper;
+        private readonly IOptions<InvoiceProviderOptions> _options;
+
+        public DummyInvoiceService(CryptoHelper cryptoHelper, IOptions<InvoiceProviderOptions> options)
+        {
+            _cryptoHelper = cryptoHelper;
+            _options = options;
+        }
+
         public async Task<PaginatedResult<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId, int page, int pageSize, string sortColumn, bool sortAsc)
         {
             if (clientId <= 0)
@@ -40,13 +51,14 @@ namespace Billing.API.Services.Invoice
                 DateTime.Today.AddDays(x),
                 "ARS",
                 100,
-                $"invoice_{DateTime.Today.AddDays(x):yyyy-MM-dd}_{x}.pdf")
+                $"invoice_{DateTime.Today.AddDays(x):yyyy-MM-dd}_{x}.pdf",
+                x)
             ).AsQueryable();
 
             var invoiceSorted = GetInvoicesSorted(invoices, sortColumn, sortAsc).ToList();
             var paginatedInvoices = invoiceSorted;
 
-            if ((page > 0) && (pageSize > 0))
+            if (page > 0 && pageSize > 0)
             {
                 paginatedInvoices = invoiceSorted.Skip((page - 1) * pageSize).Take(pageSize).ToList();
             }
