@@ -8,22 +8,29 @@ using System.Threading.Tasks;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class CanAccessUserHandler : AuthorizationHandler<CanAccessUserRequirement>
+    public class IsSuperUserOrOwnResourceHandler : AuthorizationHandler<IsSuperUserOrOwnResourceRequirement>
     {
-        private readonly ILogger<CanAccessUserHandler> _logger;
+        private readonly ILogger<IsSuperUserOrOwnResourceHandler> _logger;
 
-        public CanAccessUserHandler(ILogger<CanAccessUserHandler> logger)
+        public IsSuperUserOrOwnResourceHandler(ILogger<IsSuperUserOrOwnResourceHandler> logger)
         {
             _logger = logger;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, CanAccessUserRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsSuperUserOrOwnResourceRequirement requirement)
         {
             if (!IsSuperUser(context))
             {
                 var tokenUserId = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
                 var resource = context.Resource as Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext;
-                if (resource.RouteData.Values.TryGetValue("clientId", out var clientId) && clientId.ToString() != tokenUserId)
+
+                if (resource is null)
+                {
+                    _logger.LogWarning("Is not possible access to Resource information.");
+                    return Task.CompletedTask;
+                }
+
+                if (!resource.RouteData.Values.TryGetValue("clientId", out var clientId) || clientId?.ToString() != tokenUserId)
                 {
                     _logger.LogWarning("The IdUser into the token is different that in the route. The user hasn't permissions.");
                     return Task.CompletedTask;
@@ -39,7 +46,7 @@ namespace Billing.API.DopplerSecurity
         {
             if (!context.User.HasClaim(c => c.Type.Equals("isSU")))
             {
-                _logger.LogWarning("The token hasn't super user permissions.");
+                _logger.LogDebug("The token hasn't super user permissions.");
                 return false;
             }
 
@@ -49,7 +56,7 @@ namespace Billing.API.DopplerSecurity
                 return true;
             }
 
-            _logger.LogWarning("The token super user permissions is false.");
+            _logger.LogDebug("The token super user permissions is false.");
             return false;
         }
     }
