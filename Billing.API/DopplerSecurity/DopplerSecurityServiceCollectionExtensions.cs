@@ -10,7 +10,8 @@ namespace Microsoft.Extensions.DependencyInjection
     {
         public static IServiceCollection AddDopplerSecurity(this IServiceCollection services)
         {
-            services.AddSingleton<IAuthorizationHandler, IsSuperUserOrOwnResourceHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsOwnResourceHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsSuperUserHandler>();
             services.ConfigureOptions<ConfigureDopplerSecurityOptions>();
 
             services
