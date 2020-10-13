@@ -5,11 +5,12 @@ using System.Threading.Tasks;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsOwnResourceHandler : AuthorizationHandler<IsSuperUserOrOwnResourceRequirement>
+    public class IsOwnResourceHandler<T> : AuthorizationHandler<IsSuperUserOrOwnResourceRequirement>
+        where T: IAuthorizationRequirement
     {
-        private readonly ILogger<IsOwnResourceHandler> _logger;
+        private readonly ILogger<IsOwnResourceHandler<T>> _logger;
 
-        public IsOwnResourceHandler(ILogger<IsOwnResourceHandler> logger)
+        public IsOwnResourceHandler(ILogger<IsOwnResourceHandler<T>> logger)
         {
             _logger = logger;
         }
