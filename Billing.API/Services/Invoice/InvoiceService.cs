@@ -131,6 +131,8 @@ namespace Billing.API.Services.Invoice
                 query += $"         min(T0.\"AbsEntry\") AS \"AbsEntry\" ";
                 query += $"         FROM {schema}.oeml T0 ";
                 query += $"         WHERE T0.\"ObjType\" = '13' ";
+                if (clientPrefix.IsNotNullOrEmpty() && clientId.HasValue)
+                    query += $" AND (T0.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR T0.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%') ";
                 query += $"         GROUP BY T0.\"DocEntry\" ) x ON x.\"DocEntry\" = OI.\"DocEntry\" ";
                 query += $"     INNER JOIN {schema}.ATC1 AT1 ON x.\"AtcEntry\" = AT1.\"AbsEntry\" ";
                 query += $"     INNER JOIN {schema}.oeml OEM ON OEM.\"AbsEntry\" = x.\"AbsEntry\" ";
