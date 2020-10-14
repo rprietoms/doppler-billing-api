@@ -48,6 +48,8 @@ namespace Billing.API.Services.Invoice
             var invoices = Enumerable.Range(1, 50).Select(x => new InvoiceListItem(
                 $"Prod {x}",
                 $"{clientPrefix}{clientId:0000000000000}",
+                new DateTimeOffset(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0, TimeSpan.Zero).AddDays(x),
+                new DateTimeOffset(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0, TimeSpan.Zero).AddDays(x + 15),
                 DateTime.Today.AddDays(x),
                 "ARS",
                 100,
