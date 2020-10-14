@@ -44,11 +44,18 @@ namespace Billing.API.Test
         }
 
         [Theory]
+        // isSU=true
         [InlineData(HttpStatusCode.OK, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A")]
+        // "isSu": false,
         [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ3MDksImV4cCI6MTU5Nzc2NDcxOSwiaWF0IjoxNTk3NzY0NzA5LCJpc1NVIjpmYWxzZX0.K7khi_qhvj0eF3ahZzNcRkzrRPDFR_q-5xAujSeFG3GaFhJIhgARX7fsA4iPPhTJtFA1oqF54d-vyNhGAhBDFzSKUHyRegdRJ5FiQwcQ537PbZUfCc702sEi-MjzfpkP1PZrk0Zrn5-ybUDJi-6qjia8_YxvA4px8KGPT10Z6PnrpeCuWtESmMlSre7CgCRpydXZ0XkV0hsn-CD8p5oSV9iMCXS3npJBBhzLvw9B_LienlnJQMVs88ykSDqZNUWdGMVTO4QF4JChd67W7B9I0MmmbtgCZ5yo0EwykYR6RaZYihtKjesmHlBcFaHJc1C-3V8TQ3L0-81PpemqZd_3yQ")]
+        // without isSU and nameId
         [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1NzcsImV4cCI6MTU5Nzc2NDU4NywiaWF0IjoxNTk3NzY0NTc3fQ.S3qzN2kCR7VtrkCG-FTq_Hrv377Fn8wevryAhHHKq5SupMsEaa1SYAdNZdlMLZyyZQUe95UYM4_Ba63Kbm9zu6fkh_xKfmLGbiZhEjJM5nVR0HLa7mAPTNY25YrfRtQRyyLvLDJ1KSXIY_iUd1IT1hQAIqMG7pD29eD6RY4_n_z619AgET94F_Jj7w505JvNNR7z5fpW5ZM1XaEPlrCbXVfCKtLLxM8YlNRBOmyJRG2ideaRfqEw7vb3AIW6c4EdHV1c9EBsYGfWkSJZOOpXKoOpUmvhVLmxpctTNNq_iS67JE3AFlkatboq9z8l9DHDIdoveIE6unHq4YgUmltnDg")]
+        // invalid token
         [InlineData(HttpStatusCode.Unauthorized, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9")]
+        // "nameid": 222541, "isSu": false,
         [InlineData(HttpStatusCode.OK, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjIyMjU0MSwidW5pcXVlX25hbWUiOiJiYW1hcm9AbWFraW5nc2Vuc2UuY29tIiwiaXNTdSI6ZmFsc2UsInN1YiI6ImJhbWFyb0BtYWtpbmdzZW5zZS5jb20iLCJjdXN0b21lcklkIjpudWxsLCJjZGhfY3VzdG9tZXJJZCI6bnVsbCwicm9sZSI6IlVTRVIiLCJpYXQiOjE2MDE5MTgyNzYsImV4cCI6MTYwMTkyMDA3Nn0.8J3SwjqB0GoTw3RwCeYwR9jAE_hZUnJ-1ooYYczl-JoBXBZYNxWjMpXl_JbYjC07rl0FW8lN1pas5ENWTA8WszDCTGSAu4YSFXcikleYOpddtuXBRGouM2PzRTWDm2ANY8yAScwVL0uzP3cG3u3819GYNWzoN1oC0rnDRvGmh2wXTid_mE-ZBq-DMuxnB1ivC1Ji728FfGtUkB0T8Qu9mYQnRCaNof8K47eWntko1kWG7LDxA83up3KxK-qhwnEwnNZQvhxneL8Q5SV5-qjtXfwn_8PBVGSqRZoc0tqeALfolzycCwlobmV9opYgbjqmgDQENBIyKV4kPfm8QS4JYg")]
+        //"nameid": 50018, "isSu": false,
+        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjUwMDE4LCJ1bmlxdWVfbmFtZSI6ImNiZXJuYXRAZ2V0Y3MuY29tIiwiaXNTdSI6ZmFsc2UsInN1YiI6ImNiZXJuYXRAZ2V0Y3MuY29tIiwiY3VzdG9tZXJJZCI6IjEwMjQiLCJjZGhfY3VzdG9tZXJJZCI6IjEwMjQiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTYwMjY4NTEzMiwiZXhwIjoxNjAyNjg2OTMyfQ.lQ6XM4U69kLvpye4WdT-YQ8Aio_vr_T-V1rVpsB7gMG-cPQ_3rVlGv0rxIg_koXB8DY7SXN3O0GCFJ5X78bBHDf49fwiePtSc40Ocjk4m2VNZuUKAOm1Waw9LboExICOu0MpYBhlBQs_r3WKbaA2UOGDQTjok2AjzLfJ9S29qVgFqgzFhHIcTD7QEa30BV2hff-Ou4Y9HtvjqrXhnPQz2lD1usxXZrp5US6u-fXeXEoLRX1mboTUe7b0yWfA_JlIqtMeCu39kZxS0RPjdplgqWYmFKkQRsEZ3muMS22BcGKwsHZqai0CxCqaWhfBLE9COStc4Ep4K9iHFslP1fCdaQ")]
         public async Task GetInvoices_WhenToken_ReturnsResponse(HttpStatusCode httpStatusCode, string token)
         {
             // Arrange
@@ -270,7 +277,7 @@ namespace Billing.API.Test
         }
 
         [Fact]
-        public async Task GetInvoices_WhenValidToken_ReturnsOk()
+        public async Task GetInvoices_WhenValidSUToken_ReturnsOk()
         {
             // Arrange
             _httpTest.RespondWithJson(string.Empty);
@@ -290,7 +297,7 @@ namespace Billing.API.Test
         }
 
         [Fact]
-        public async Task GetInvoices_WhenInvalidToken_ReturnsUnauthorized()
+        public async Task GetInvoices_WithoutToken_ReturnsUnauthorized()
         {
             // Arrange
             var client = _factory.WithDisabledLifeTimeValidation()
