@@ -57,6 +57,7 @@ namespace Billing.API.Controllers
             return Ok(response);
         }
 
+        [AllowAnonymous]
         [HttpGet]
         [Route("/accounts/{origin}/{clientId:int:min(1)}/invoices/{filename}")]
         public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename, [FromQuery(Name = "s")] string signature)
