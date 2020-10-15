@@ -30,6 +30,8 @@ namespace Billing.API.Services.Invoice
             var invoices = dt.Select().Select(dr => new InvoiceListItem(
                 clientPrefix,
                 clientId.ToString(),
+                dr.Field<DateTime>("CreateDate").ToDateTimeOffSet(),
+                dr.Field<DateTime>("DocDueDate").ToDateTimeOffSet(),
                 dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
                 dr.Field<string>("DocCur"),
                 dr.Field<decimal>("DocTotal").ToDouble(),
@@ -119,6 +121,8 @@ namespace Billing.API.Services.Invoice
                 query += $"     cast(OEM.\"DocEntry\" AS NVARCHAR) AS \"DocEntry\" ,";
                 query += $"     OI.\"DocTotal\" ,";
                 query += $"     OI.\"PaidToDate\" ,";
+                query += "      OI.\"CreateDate\" ,";
+                query += "      OI.\"DocDueDate\" ,";
                 query += $"     cast(OI.\"DocCur\" AS NVARCHAR)   AS \"DocCur\" ,";
                 query += $"     cast(AT1.\"trgtPath\" AS NVARCHAR) AS \"trgtPath\" ,";
                 query += $"     cast(AT1.\"FileName\" AS NVARCHAR) AS \"FileName\" ,";
