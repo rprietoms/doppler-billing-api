@@ -8,7 +8,8 @@ using System.Threading.Tasks;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsSuperUserHandler<T> : AuthorizationHandler<IsSuperUserOrOwnResourceRequirement>
+    public class IsSuperUserHandler<T> : AuthorizationHandler<T>
+        where T: IAuthorizationRequirement
     {
         private readonly ILogger<IsSuperUserHandler<T>> _logger;
 
@@ -17,7 +18,7 @@ namespace Billing.API.DopplerSecurity
             _logger = logger;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsSuperUserOrOwnResourceRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, T requirement)
         {
             if (IsSuperUser(context))
             {

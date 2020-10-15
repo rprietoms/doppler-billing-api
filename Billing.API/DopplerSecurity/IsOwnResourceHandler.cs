@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsOwnResourceHandler<T> : AuthorizationHandler<IsSuperUserOrOwnResourceRequirement>
+    public class IsOwnResourceHandler<T> : AuthorizationHandler<T>
         where T: IAuthorizationRequirement
     {
         private readonly ILogger<IsOwnResourceHandler<T>> _logger;
@@ -15,7 +15,7 @@ namespace Billing.API.DopplerSecurity
             _logger = logger;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, IsSuperUserOrOwnResourceRequirement requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, T requirement)
         {
             if (IsOwnResource(context))
             {
