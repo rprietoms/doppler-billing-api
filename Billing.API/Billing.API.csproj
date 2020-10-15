@@ -2,8 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.1</TargetFramework>
-    <AssemblyVersion>2020.10.14.1</AssemblyVersion>
-    <FileVersion>2020.10.14.1</FileVersion>
+    <AssemblyVersion>2020.10.15.13</AssemblyVersion>
+    <FileVersion>2020.10.15.13</FileVersion>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">

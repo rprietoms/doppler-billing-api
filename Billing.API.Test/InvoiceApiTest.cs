@@ -346,11 +346,11 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?signature=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgKuV0")]
-        public async Task GetInvoiceFile_ShouldReturnPdfFileContents(string path)
+        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgKuV0")]
+        public async Task GetInvoiceFile_WithNoTokenAndValidSignature_ShouldReturnPdfFileContents(string path)
         {
             // Arrange
-            using (var appFactory = _factory.WithBypassAuthorization())
+            using (var appFactory = _factory.WithDisabledLifeTimeValidation())
             {
                 appFactory.AddConfiguration(new Dictionary<string, string>
                 {
@@ -369,6 +369,58 @@ namespace Billing.API.Test
                 Assert.Equal(HttpStatusCode.OK, response.StatusCode);
                 Assert.Equal("application/pdf", response.Content.Headers.ContentType.MediaType);
                 Assert.NotNull(content);
+            }
+        }
+
+        [Theory]
+        [InlineData("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A", "accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
+        public async Task GetInvoiceFile_WithTokenAndInvalidSignature_ShouldReturnPdfFileContents(string token, string path)
+        {
+            // Arrange
+            using (var appFactory = _factory.WithDisabledLifeTimeValidation())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+                var client = appFactory.CreateClient();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/{path}");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+
+                // Act
+                var response = await client.SendAsync(request);
+                var content  = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+                Assert.Equal("application/pdf", response.Content.Headers.ContentType.MediaType);
+                Assert.NotNull(content);
+            }
+        }
+
+        [Theory]
+        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
+        public async Task GetInvoiceFile_WithNoTokenAndInvalidSignature_ShouldReturnUnauthorized(string path)
+        {
+            // Arrange
+            using (var appFactory = _factory.WithDisabledLifeTimeValidation())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+                var client = appFactory.CreateClient();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/{path}");
+
+                // Act
+                var response = await client.SendAsync(request);
+
+                // Assert
+                Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
             }
         }
 

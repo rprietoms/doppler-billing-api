@@ -14,7 +14,7 @@ namespace Billing.API.Controllers
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private static readonly string _invoiceFilenameRegex = @"^invoice_\d{4}-\d{2}-\d{2}_(\d+)\.pdf$";
+        private const string INVOICE_FILENAME_REGEX = @"^invoice_\d{4}-\d{2}-\d{2}_(\d+)\.pdf$";
 
         private readonly ILogger<InvoiceController> _logger;
         private readonly IInvoiceService _invoiceService;
@@ -57,7 +57,6 @@ namespace Billing.API.Controllers
             return Ok(response);
         }
 
-        [AllowAnonymous]
         [HttpGet]
         [Route("/accounts/{origin}/{clientId:int:min(1)}/invoices/{filename}")]
         public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename, [FromQuery(Name = "s")] string signature)
@@ -67,7 +66,7 @@ namespace Billing.API.Controllers
             if (!TryGetClientPrefix(origin, out var clientPrefix))
                 return BadRequest();
 
-            var match = Regex.Match(filename, _invoiceFilenameRegex);
+            var match = Regex.Match(filename, INVOICE_FILENAME_REGEX);
 
             if (!match.Success)
                 return BadRequest();

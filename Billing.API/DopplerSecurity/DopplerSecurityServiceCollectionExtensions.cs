@@ -12,6 +12,7 @@ namespace Microsoft.Extensions.DependencyInjection
         {
             services.AddSingleton<IAuthorizationHandler, IsOwnResourceHandler<IsSuperUserOrOwnResourceRequirement>>();
             services.AddSingleton<IAuthorizationHandler, IsSuperUserHandler<IsSuperUserOrOwnResourceRequirement>>();
+            services.AddSingleton<IAuthorizationHandler, IsValidSignatureHandler<IsSuperUserOrOwnResourceRequirement>>();
             services.ConfigureOptions<ConfigureDopplerSecurityOptions>();
 
             services
@@ -21,7 +22,7 @@ namespace Microsoft.Extensions.DependencyInjection
                     o.DefaultPolicy = new AuthorizationPolicyBuilder()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                         .AddRequirements(new IsSuperUserOrOwnResourceRequirement())
-                        .RequireAuthenticatedUser()
+                        //.RequireAuthenticatedUser()
                         .Build();
                 });
 
