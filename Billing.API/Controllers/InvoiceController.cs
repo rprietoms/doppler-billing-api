@@ -10,11 +10,10 @@ using Microsoft.Extensions.Options;
 
 namespace Billing.API.Controllers
 {
-    [Authorize]
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private const string INVOICE_FILENAME_REGEX = @"^invoice_\d{4}-\d{2}-\d{2}_(\d+)\.pdf$";
+        private static readonly Regex InvoiceFilenameRegex = new Regex(@"^invoice_\d{4}-\d{2}-\d{2}_(\d+)\.pdf$");
 
         private readonly ILogger<InvoiceController> _logger;
         private readonly IInvoiceService _invoiceService;
@@ -29,7 +28,9 @@ namespace Billing.API.Controllers
             _options = options;
         }
 
-        [HttpGet("/accounts/{origin}/{clientId:int:min(0)}/invoices/")]
+        [HttpGet]
+        [Authorize]
+        [Route("/accounts/{origin}/{clientId:int:min(0)}/invoices/")]
         public async Task<IActionResult> GetInvoices([FromRoute] string origin,
             [FromRoute] int clientId,
             [FromQuery] int page = 1,
@@ -46,10 +47,12 @@ namespace Billing.API.Controllers
 
             foreach (var invoice in response.Items)
             {
+                var urlPath = $"/accounts/{origin}/{clientId}/invoices/{invoice.Filename}";
+
                 invoice.Links.Add(new Link
                 {
                     Rel = "file",
-                    Href = $"{_options.Value.BaseUrl}/accounts/{origin}/{clientId}/invoices/{invoice.Filename}?s={_cryptoHelper.GenerateInvoiceSign($"{clientPrefix}{clientId}{invoice.FileId}")}",
+                    Href = $"{_options.Value.BaseUrl}{urlPath}?_s={_cryptoHelper.GenerateSignature(urlPath)}",
                     Description = "Download invoice"
                 });
             }
@@ -58,15 +61,16 @@ namespace Billing.API.Controllers
         }
 
         [HttpGet]
+        [Authorize("TokenSignature")]
         [Route("/accounts/{origin}/{clientId:int:min(1)}/invoices/{filename}")]
-        public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename, [FromQuery(Name = "s")] string signature)
+        public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename, [FromQuery(Name = "_s")] string signature)
         {
             _logger.LogDebug("Getting invoice for {0} client {1} filename {2}", origin, clientId, filename);
 
             if (!TryGetClientPrefix(origin, out var clientPrefix))
                 return BadRequest();
 
-            var match = Regex.Match(filename, INVOICE_FILENAME_REGEX);
+            var match = InvoiceFilenameRegex.Match(filename);
 
             if (!match.Success)
                 return BadRequest();
@@ -81,7 +85,8 @@ namespace Billing.API.Controllers
             return File(response, "application/pdf", filename);
         }
 
-        [HttpGet("/testSap")]
+        [HttpGet]
+        [Route("/testSap")]
         public async Task<IActionResult> TestSapConnection()
         {
             var response = await _invoiceService.TestSapConnection();

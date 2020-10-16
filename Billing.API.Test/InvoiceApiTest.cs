@@ -346,7 +346,7 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgKuV0")]
+        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?_s=q9Vb7OMljCgaNKd6aJbcQgxH7L6rKxy7eRfK30qDSyw")]
         public async Task GetInvoiceFile_WithNoTokenAndValidSignature_ShouldReturnPdfFileContents(string path)
         {
             // Arrange
@@ -373,7 +373,7 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A", "accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
+        [InlineData("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A", "accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?_s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
         public async Task GetInvoiceFile_WithTokenAndInvalidSignature_ShouldReturnPdfFileContents(string token, string path)
         {
             // Arrange
@@ -401,7 +401,7 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
+        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?_s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
         public async Task GetInvoiceFile_WithNoTokenAndInvalidSignature_ShouldReturnUnauthorized(string path)
         {
             // Arrange
@@ -428,7 +428,7 @@ namespace Billing.API.Test
         public async Task GetInvoiceFile_WhenInvalidClientOrigin_ReturnsBadRequest()
         {
             // Arrange
-            using (var appFactory = _factory.WithBypassAuthorization())
+            using (var appFactory = _factory.WithDisabledLifeTimeValidation())
             {
                 appFactory.AddConfiguration(new Dictionary<string, string>
                 {
@@ -438,6 +438,7 @@ namespace Billing.API.Test
                 var client = appFactory.CreateClient();
 
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/invalid_origin/1/invoices/filename.ext?s=123456");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
 
                 // Act
                 var response = await client.SendAsync(request);
@@ -478,7 +479,7 @@ namespace Billing.API.Test
         public async Task GetInvoiceFile_WhenWrongFilePattern_ReturnsBadRequest()
         {
             // Arrange
-            using (var appFactory = _factory.WithBypassAuthorization())
+            using (var appFactory = _factory.WithDisabledLifeTimeValidation())
             {
                 appFactory.AddConfiguration(new Dictionary<string, string>
                 {
@@ -488,6 +489,7 @@ namespace Billing.API.Test
                 var client = appFactory.CreateClient();
 
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices/whatever.ext");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
 
                 // Act
                 var response = await client.SendAsync(request);
