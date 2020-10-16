@@ -498,5 +498,33 @@ namespace Billing.API.Test
                 Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
             }
         }
+
+        [Fact]
+        public async Task GetInvoices_Should_Returns_Balance_Equal_Amount_Minus_PaidToDate()
+        {
+            // Arrange
+            using (var appFactory = _factory.WithBypassAuthorization())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+                var client = appFactory.CreateClient();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/accounts/doppler/1/invoices?page=2&sortColumn=Product&sortAsc=true");
+
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+                var result = JsonConvert.DeserializeObject<PaginatedResult<InvoiceListItem>>(content);
+
+                // Assert
+                _httpTest.ShouldNotHaveMadeACall();
+
+                Assert.All(result.Items,
+                    item => Assert.Equal(item.Amount - item.PaidToDate, item.Balance));
+            }
+        }
     }
 }

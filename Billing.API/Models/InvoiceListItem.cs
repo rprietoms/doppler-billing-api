@@ -14,6 +14,8 @@ namespace Billing.API.Models
         public DateTimeOffset Date { get; }
         public string Currency { get; }
         public double Amount { get; }
+        public double PaidToDate { get; }
+        public double Balance { get { return Amount - PaidToDate; } }
 
         [JsonIgnore]
         public int FileId { get; }
@@ -23,7 +25,7 @@ namespace Billing.API.Models
         [JsonProperty(PropertyName = "_links")]
         public List<Link> Links { get; } = new List<Link>();
 
-        public InvoiceListItem(string product, string accountId, DateTimeOffset creationDate, DateTimeOffset dueDate, DateTimeOffset date, string currency, double amount, string filename, int fileId)
+        public InvoiceListItem(string product, string accountId, DateTimeOffset creationDate, DateTimeOffset dueDate, DateTimeOffset date, string currency, double amount, double paidToDate, string filename, int fileId)
         {
             Product = product.EqualsIgnoreCase("CD") ? "Doppler"
                 : product.EqualsIgnoreCase("CR") ? "Relay"
@@ -35,6 +37,7 @@ namespace Billing.API.Models
             Date = date;
             Currency = currency;
             Amount = amount;
+            PaidToDate = paidToDate;
             Filename = filename;
             FileId = fileId;
         }
