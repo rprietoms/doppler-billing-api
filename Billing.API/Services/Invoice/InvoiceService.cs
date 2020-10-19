@@ -35,6 +35,7 @@ namespace Billing.API.Services.Invoice
                 dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
                 dr.Field<string>("DocCur"),
                 dr.Field<decimal>("DocTotal").ToDouble(),
+                dr.Field<decimal>("PaidToDate").ToDouble(),
                 $"invoice_{dr.Field<DateTime>("SendDate"):yyyy-MM-dd}_{dr.Field<int>("AbsEntry")}.{dr.Field<string>("FileExt")}",
                 dr.Field<int>("AbsEntry")))
                 .AsQueryable();
@@ -120,7 +121,7 @@ namespace Billing.API.Services.Invoice
                 query += $"     OEM.\"SendTime\" ,";
                 query += $"     cast(OEM.\"DocEntry\" AS NVARCHAR) AS \"DocEntry\" ,";
                 query += $"     OI.\"DocTotal\" ,";
-                query += $"     OI.\"PaidToDate\" ,";
+                query += "      OI.\"PaidToDate\" ,";
                 query += "      OI.\"CreateDate\" ,";
                 query += "      OI.\"DocDueDate\" ,";
                 query += $"     cast(OI.\"DocCur\" AS NVARCHAR)   AS \"DocCur\" ,";

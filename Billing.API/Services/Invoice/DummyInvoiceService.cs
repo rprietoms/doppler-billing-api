@@ -53,6 +53,7 @@ namespace Billing.API.Services.Invoice
                 DateTime.Today.AddDays(x),
                 "ARS",
                 100,
+                50,
                 $"invoice_{DateTime.Today.AddDays(x):yyyy-MM-dd}_{x}.pdf",
                 x)
             ).AsQueryable();
