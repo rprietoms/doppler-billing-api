@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.Extensions.Logging;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Billing.API.DopplerSecurity
 {
@@ -28,9 +29,8 @@ namespace Billing.API.DopplerSecurity
         private bool IsOwnResource(AuthorizationHandlerContext context)
         {
             var tokenUserId = context.User.FindFirst(c => c.Type == ClaimTypes.NameIdentifier)?.Value;
-            var resource = context.Resource as Microsoft.AspNetCore.Mvc.Filters.AuthorizationFilterContext;
 
-            if (resource is null)
+            if (!(context.Resource is AuthorizationFilterContext resource))
             {
                 _logger.LogWarning("Is not possible access to Resource information.");
                 return false;

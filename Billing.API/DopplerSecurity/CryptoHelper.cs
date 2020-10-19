@@ -15,7 +15,7 @@ namespace Billing.API.DopplerSecurity
             _signatureHashKey = options.Value.SignatureHashKey;
         }
 
-        public string GenerateInvoiceSign(string payload)
+        public string GenerateSignature(string payload)
         {
             var key = $"{payload}{_signatureHashKey}";
 
