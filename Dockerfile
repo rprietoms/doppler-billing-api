@@ -10,7 +10,7 @@ COPY . .
 RUN dotnet build -c Release
 
 FROM build AS test
-RUN dotnet test
+RUN dotnet test /p:CollectCoverage=true
 
 FROM build AS publish
 RUN dotnet publish "Billing.API/Billing.API.csproj" -c Release -o /app/publish

@@ -347,3 +347,5 @@ healthchecksdb
 .DS_Store
 docs/demo-cd-branches/dist
 wwwroot_extras/version.txt
+
+/Billing.API.Test/coverage.json
