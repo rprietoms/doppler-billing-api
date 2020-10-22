@@ -346,7 +346,7 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?_s=q9Vb7OMljCgaNKd6aJbcQgxH7L6rKxy7eRfK30qDSyw")]
+        [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?_s=sOvP2buZIW8IFDAXMIe8BROG9GoB7zLPCzAv3OzVs")]
         public async Task GetInvoiceFile_WithNoTokenAndValidSignature_ShouldReturnPdfFileContents(string path)
         {
             // Arrange
