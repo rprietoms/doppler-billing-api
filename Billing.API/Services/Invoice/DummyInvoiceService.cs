@@ -46,14 +46,16 @@ namespace Billing.API.Services.Invoice
         private PaginatedResult<InvoiceListItem> GetDummyInvoices(string clientPrefix, int clientId, int page, int pageSize, string sortColumn, bool sortAsc)
         {
             var invoices = Enumerable.Range(1, 50).Select(x => new InvoiceListItem(
+                x == 50 ? "NC" : "FC",
+                $"A-0001-00000000{x}",
                 $"Prod {x}",
                 $"{clientPrefix}{clientId:0000000000000}",
                 new DateTimeOffset(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0, TimeSpan.Zero).AddDays(x),
                 new DateTimeOffset(DateTime.Today.Year, DateTime.Today.Month, DateTime.Today.Day, 0, 0, 0, TimeSpan.Zero).AddDays(x + 15),
                 DateTime.Today.AddDays(x),
                 "ARS",
-                100,
-                50,
+                x == 50 ? -100 : 15500,
+                x == 50 ? -100 : 1000,
                 $"invoice_{DateTime.Today.AddDays(x):yyyy-MM-dd}_{x}.pdf",
                 x)
             ).AsQueryable();

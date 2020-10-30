@@ -6,6 +6,8 @@ namespace Billing.API.Models
 {
     public class InvoiceListItem
     {
+        public string DocumentType { get; }
+        public string DocumentNumber { get; }
         public string Product { get; }
         public string AccountId { get; }
         public DateTimeOffset CreationDate { get; }
@@ -25,8 +27,10 @@ namespace Billing.API.Models
         [JsonProperty(PropertyName = "_links")]
         public List<Link> Links { get; } = new List<Link>();
 
-        public InvoiceListItem(string product, string accountId, DateTimeOffset creationDate, DateTimeOffset dueDate, DateTimeOffset date, string currency, double amount, double paidToDate, string filename, int fileId)
+        public InvoiceListItem(string documentType, string documentNumber, string product, string accountId, DateTimeOffset creationDate, DateTimeOffset dueDate, DateTimeOffset date, string currency, double amount, double paidToDate, string filename, int fileId)
         {
+            DocumentType = documentType;
+            DocumentNumber = documentNumber;
             Product = product.EqualsIgnoreCase("CD") ? "Doppler"
                 : product.EqualsIgnoreCase("CR") ? "Relay"
                 : product.EqualsIgnoreCase("CM") ? "Client Manager"

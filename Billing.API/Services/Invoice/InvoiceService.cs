@@ -28,6 +28,8 @@ namespace Billing.API.Services.Invoice
             var dt = await GetInvoiceRecords(clientPrefix, clientId);
 
             var invoices = dt.Select().Select(dr => new InvoiceListItem(
+                dr.Field<string>("DocumentType"),
+                dr.Field<string>("DocumentNumber"),
                 clientPrefix,
                 clientId.ToString(),
                 dr.Field<DateTime>("CreateDate").ToDateTimeOffSet(),
@@ -105,50 +107,21 @@ namespace Billing.API.Services.Invoice
 
         private async Task<DataTable> GetInvoiceRecords(string clientPrefix, int clientId, int? fileId = null)
         {
-            var schema = _options.Value.Schema;
-
             using (var conn = new HanaConnection(_options.Value.DbConnectionString))
             {
                 conn.Open();
 
                 var query = string.Empty;
 
-                query += $" SELECT";
-                query += $"     AT1.\"AbsEntry\" ,";
-                query += $"     OEM.\"CardCode\" ,";
-                query += $"     OEM.\"CardName\" ,";
-                query += $"     OEM.\"SendDate\" ,";
-                query += $"     OEM.\"SendTime\" ,";
-                query += $"     cast(OEM.\"DocEntry\" AS NVARCHAR) AS \"DocEntry\" ,";
-                query += $"     OI.\"DocTotal\" ,";
-                query += "      OI.\"PaidToDate\" ,";
-                query += "      OI.\"CreateDate\" ,";
-                query += "      OI.\"DocDueDate\" ,";
-                query += $"     cast(OI.\"DocCur\" AS NVARCHAR)   AS \"DocCur\" ,";
-                query += $"     cast(AT1.\"trgtPath\" AS NVARCHAR) AS \"trgtPath\" ,";
-                query += $"     cast(AT1.\"FileName\" AS NVARCHAR) AS \"FileName\" ,";
-                query += $"     cast(AT1.\"FileExt\" AS NVARCHAR)  AS \"FileExt\" ";
-                query += $" FROM";
-                query += $"     {schema}.OINV OI ";
-                query += $"     INNER JOIN ( SELECT";
-                query += $"         T0.\"DocEntry\" ,";
-                query += $"         min(T0.\"AtcEntry\") AS \"AtcEntry\" ,";
-                query += $"         min(T0.\"AbsEntry\") AS \"AbsEntry\" ";
-                query += $"         FROM {schema}.oeml T0 ";
-                query += $"         WHERE T0.\"ObjType\" = '13' ";
-                query += $" AND (T0.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR T0.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%') ";
-                query += $"         GROUP BY T0.\"DocEntry\" ) x ON x.\"DocEntry\" = OI.\"DocEntry\" ";
-                query += $"     INNER JOIN {schema}.ATC1 AT1 ON x.\"AtcEntry\" = AT1.\"AbsEntry\" ";
-                query += $"     INNER JOIN {schema}.oeml OEM ON OEM.\"AbsEntry\" = x.\"AbsEntry\" ";
-                query += $" WHERE";
-                query += $"     OI.\"ObjType\" = '13'";
-                query += $" AND (OI.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR OI.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%')";
+                /* Invoices */
+                query += CreateInvoiceQuery("FC", clientPrefix, clientId, fileId);
 
-                if (fileId.HasValue)
-                    query += $" AND (AT1.\"AbsEntry\" = '{fileId}')";
+                query += " UNION ";
+
+                /* Credit Notes */
+                query += CreateInvoiceQuery("NC", clientPrefix, clientId, fileId);
 
                 var da = new HanaDataAdapter(query, conn);
-
                 var dt = new DataTable("Invoices");
 
                 da.Fill(dt);
@@ -157,6 +130,63 @@ namespace Billing.API.Services.Invoice
 
                 return dt;
             }
+        }
+
+        private string CreateInvoiceQuery(string documentType, string clientPrefix, int clientId, int? fileId = null)
+        {
+            var schema = _options.Value.Schema;
+            var query = string.Empty;
+
+            var queryData = documentType == "FC"
+                ? new
+                {
+                    ObjType = 13,
+                    AmountFactor = 1,
+                    Table = "OINV"
+                }
+                : new
+                {
+                    ObjType = 14,
+                    AmountFactor = -1,
+                    Table = "ORIN"
+                };
+
+            query += "  SELECT";
+            query += "     AT1.\"AbsEntry\" ,";
+            query += "     OEM.\"CardCode\" ,";
+            query += "     OEM.\"CardName\" ,";
+            query += "     OEM.\"SendDate\" ,";
+            query += "     OEM.\"SendTime\" ,";
+            query += "     cast(OEM.\"DocEntry\" AS NVARCHAR) AS \"DocEntry\" ,";
+            query += $"    '{documentType}' AS \"DocumentType\", ";
+            query += "     INV.\"Letter\" || '-' || (Right(INV.\"PTICode\", 4) || '-' || Right('00000000' || COALESCE(INV.\"FolNumFrom\", '0'), 8))  AS \"DocumentNumber\", ";
+            query += $"    INV.\"DocTotal\" * {queryData.AmountFactor} AS \"DocTotal\" ,";
+            query += $"    INV.\"PaidToDate\" * {queryData.AmountFactor} AS \"PaidToDate\" ,"; ;
+            query += "      INV.\"CreateDate\" ,";
+            query += "      INV.\"DocDueDate\" ,";
+            query += "     cast(INV.\"DocCur\" AS NVARCHAR)   AS \"DocCur\" ,";
+            query += "     cast(AT1.\"trgtPath\" AS NVARCHAR) AS \"trgtPath\" ,";
+            query += "     cast(AT1.\"FileName\" AS NVARCHAR) AS \"FileName\" ,";
+            query += "     cast(AT1.\"FileExt\" AS NVARCHAR)  AS \"FileExt\" ";
+            query += $" FROM {schema}.{queryData.Table} INV";
+            query += "  INNER JOIN ( SELECT";
+            query += "         T0.\"DocEntry\" ,";
+            query += "         min(T0.\"AtcEntry\") AS \"AtcEntry\" ,";
+            query += "         min(T0.\"AbsEntry\") AS \"AbsEntry\" ";
+            query += $"        FROM {schema}.oeml T0 ";
+            query += $"        WHERE T0.\"ObjType\" = '{queryData.ObjType}' AND ";
+            query += $"              (T0.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR T0.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%') ";
+            query += "         GROUP BY T0.\"DocEntry\" ) x ON x.\"DocEntry\" = INV.\"DocEntry\" ";
+            query += $" INNER JOIN {schema}.ATC1 AT1 ON x.\"AtcEntry\" = AT1.\"AbsEntry\" ";
+            query += $" INNER JOIN {schema}.oeml OEM ON OEM.\"AbsEntry\" = x.\"AbsEntry\" ";
+            query += $" WHERE INV.\"ObjType\" = '{queryData.ObjType}' AND ";
+            query += $"       (INV.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR INV.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%')";
+
+            if (fileId.HasValue)
+                query += $" AND (AT1.\"AbsEntry\" = '{fileId}')";
+
+            return query;
+
         }
     }
 }
