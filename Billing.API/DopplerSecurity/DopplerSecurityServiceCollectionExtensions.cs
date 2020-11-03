@@ -12,12 +12,12 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddDopplerSecurity(this IServiceCollection services)
         {
-            services.AddSingleton<IAuthorizationHandler, IsOwnResourceHandler<IsSuperUserOrOwnResourceRequirement>>();
-            services.AddSingleton<IAuthorizationHandler, IsSuperUserHandler<IsSuperUserOrOwnResourceRequirement>>();
+            services.AddSingleton<IAuthorizationHandler, IsOwnResourceAuthorizationHandler<IsSuperUserOrOwnResourceRequirement>>();
+            services.AddSingleton<IAuthorizationHandler, IsSuperUserAuthorizationHandler<IsSuperUserOrOwnResourceRequirement>>();
 
-            services.AddSingleton<IAuthorizationHandler, IsOwnResourceHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
-            services.AddSingleton<IAuthorizationHandler, IsSuperUserHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
-            services.AddSingleton<IAuthorizationHandler, IsValidSignatureHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
+            services.AddSingleton<IAuthorizationHandler, IsOwnResourceAuthorizationHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
+            services.AddSingleton<IAuthorizationHandler, IsSuperUserAuthorizationHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
+            services.AddSingleton<IAuthorizationHandler, IsSignedPathAuthorizationHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
 
             services.ConfigureOptions<ConfigureDopplerSecurityOptions>();
 

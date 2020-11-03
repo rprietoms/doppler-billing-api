@@ -6,12 +6,12 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsOwnResourceHandler<T> : AuthorizationHandler<T>
+    public class IsOwnResourceAuthorizationHandler<T> : AuthorizationHandler<T>
         where T: IAuthorizationRequirement
     {
-        private readonly ILogger<IsOwnResourceHandler<T>> _logger;
+        private readonly ILogger<IsOwnResourceAuthorizationHandler<T>> _logger;
 
-        public IsOwnResourceHandler(ILogger<IsOwnResourceHandler<T>> logger)
+        public IsOwnResourceAuthorizationHandler(ILogger<IsOwnResourceAuthorizationHandler<T>> logger)
         {
             _logger = logger;
         }

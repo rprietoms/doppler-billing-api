@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsSuperUserHandler<T> : AuthorizationHandler<T>
+    public class IsSuperUserAuthorizationHandler<T> : AuthorizationHandler<T>
         where T: IAuthorizationRequirement
     {
-        private readonly ILogger<IsSuperUserHandler<T>> _logger;
+        private readonly ILogger<IsSuperUserAuthorizationHandler<T>> _logger;
 
-        public IsSuperUserHandler(ILogger<IsSuperUserHandler<T>> logger)
+        public IsSuperUserAuthorizationHandler(ILogger<IsSuperUserAuthorizationHandler<T>> logger)
         {
             _logger = logger;
         }

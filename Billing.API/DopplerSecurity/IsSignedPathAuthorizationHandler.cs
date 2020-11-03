@@ -5,13 +5,13 @@ using Microsoft.Extensions.Logging;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsValidSignatureHandler<T> : AuthorizationHandler<T>
+    public class IsSignedPathAuthorizationHandler<T> : AuthorizationHandler<T>
         where T : IAuthorizationRequirement
     {
-        private readonly ILogger<IsValidSignatureHandler<T>> _logger;
+        private readonly ILogger<IsSignedPathAuthorizationHandler<T>> _logger;
         private readonly CryptoHelper _cryptoHelper;
 
-        public IsValidSignatureHandler(ILogger<IsValidSignatureHandler<T>> logger, CryptoHelper cryptoHelper)
+        public IsSignedPathAuthorizationHandler(ILogger<IsSignedPathAuthorizationHandler<T>> logger, CryptoHelper cryptoHelper)
         {
             _logger = logger;
             _cryptoHelper = cryptoHelper;
