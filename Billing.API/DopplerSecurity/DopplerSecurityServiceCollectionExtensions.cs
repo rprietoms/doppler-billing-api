@@ -12,12 +12,9 @@ namespace Microsoft.Extensions.DependencyInjection
 
         public static IServiceCollection AddDopplerSecurity(this IServiceCollection services)
         {
-            services.AddSingleton<IAuthorizationHandler, IsOwnResourceAuthorizationHandler<IsSuperUserOrOwnResourceRequirement>>();
-            services.AddSingleton<IAuthorizationHandler, IsSuperUserAuthorizationHandler<IsSuperUserOrOwnResourceRequirement>>();
-
-            services.AddSingleton<IAuthorizationHandler, IsOwnResourceAuthorizationHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
-            services.AddSingleton<IAuthorizationHandler, IsSuperUserAuthorizationHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
-            services.AddSingleton<IAuthorizationHandler, IsSignedPathAuthorizationHandler<IsSuperUserOrOwnResourceOrValidSignatureRequirement>>();
+            services.AddSingleton<IAuthorizationHandler, IsOwnResourceAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsSuperUserAuthorizationHandler>();
+            services.AddSingleton<IAuthorizationHandler, IsSignedPathAuthorizationHandler>();
 
             services.ConfigureOptions<ConfigureDopplerSecurityOptions>();
 
@@ -27,13 +24,22 @@ namespace Microsoft.Extensions.DependencyInjection
                 {
                     o.DefaultPolicy = new AuthorizationPolicyBuilder()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
-                        .AddRequirements(new IsSuperUserOrOwnResourceRequirement())
+                        .AddRequirements(new DopplerAuthorizationRequirement
+                        {
+                            AllowSuperUser = true,
+                            AllowOwnResource = true
+                        })
                         .RequireAuthenticatedUser()
                         .Build();
 
                     o.AddPolicy(TOKEN_SIGNATURE_POLICY, new AuthorizationPolicyBuilder()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme) //TODO: Check which scheme to use
-                        .AddRequirements(new IsSuperUserOrOwnResourceOrValidSignatureRequirement())
+                        .AddRequirements(new DopplerAuthorizationRequirement
+                        {
+                            AllowSuperUser = true,
+                            AllowOwnResource = true,
+                            AllowSignedPaths = true
+                        })
                         .Build());
                 });
 

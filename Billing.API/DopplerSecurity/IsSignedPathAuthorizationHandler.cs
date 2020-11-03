@@ -5,21 +5,20 @@ using Microsoft.Extensions.Logging;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsSignedPathAuthorizationHandler<T> : AuthorizationHandler<T>
-        where T : IAuthorizationRequirement
+    public class IsSignedPathAuthorizationHandler : AuthorizationHandler<DopplerAuthorizationRequirement>
     {
-        private readonly ILogger<IsSignedPathAuthorizationHandler<T>> _logger;
+        private readonly ILogger<IsSignedPathAuthorizationHandler> _logger;
         private readonly CryptoHelper _cryptoHelper;
 
-        public IsSignedPathAuthorizationHandler(ILogger<IsSignedPathAuthorizationHandler<T>> logger, CryptoHelper cryptoHelper)
+        public IsSignedPathAuthorizationHandler(ILogger<IsSignedPathAuthorizationHandler> logger, CryptoHelper cryptoHelper)
         {
             _logger = logger;
             _cryptoHelper = cryptoHelper;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, T requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DopplerAuthorizationRequirement requirement)
         {
-            if (IsValidSignature(context))
+            if (requirement.AllowSignedPaths && IsValidSignature(context))
             {
                 context.Succeed(requirement);
             }
