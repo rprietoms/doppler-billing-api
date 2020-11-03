@@ -31,13 +31,15 @@ namespace Microsoft.Extensions.DependencyInjection
                         .Build();
 
                     o.AddPolicy(DopplerSecurityDefaults.DEFAULT_OR_SIGNED_PATHS_POLICY, new AuthorizationPolicyBuilder()
-                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme) //TODO: Check which scheme to use
+                        .AddAuthenticationSchemes(DopplerSecurityDefaults.SIGNED_PATH_SCHEME)
+                        .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme)
                         .AddRequirements(new DopplerAuthorizationRequirement
                         {
                             AllowSuperUser = true,
                             AllowOwnResource = true,
                             AllowSignedPaths = true
                         })
+                        .RequireAuthenticatedUser()
                         .Build());
                 });
 
@@ -55,7 +57,9 @@ namespace Microsoft.Extensions.DependencyInjection
                     };
                 });
 
-            services.AddAuthentication().AddJwtBearer();
+            services.AddAuthentication()
+                .AddJwtBearer()
+                .AddScheme<SignedPathAuthenticationSchemeOptions, SignedPathAuthenticationHandler>(DopplerSecurityDefaults.SIGNED_PATH_SCHEME, _ => {});
 
             services.AddAuthorization();
 

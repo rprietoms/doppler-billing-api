@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc.Filters;
@@ -34,13 +35,21 @@ namespace Billing.API.DopplerSecurity
                 return false;
             }
 
-            if (!resource.HttpContext.Request.Query.TryGetValue("_s", out var signature))
+            var signedPaths = context.User.FindAll(c => c.Type == DopplerSecurityDefaults.SIGNED_PATH_CLAIM_TYPE);
+
+            if (!signedPaths.Any())
             {
-                _logger.LogWarning("Cannot get the Signature from the query string.");
+                _logger.LogDebug("No signed paths in this request.");
                 return false;
             }
 
-            return _cryptoHelper.GenerateSignature(resource.HttpContext.Request.Path) == signature;
+            if (!signedPaths.Any(x => x.Value == resource.HttpContext.Request.Path))
+            {
+                _logger.LogDebug("Signed path does not match request's path.");
+                return false;
+            }
+
+            return true;
         }
     }
 }
