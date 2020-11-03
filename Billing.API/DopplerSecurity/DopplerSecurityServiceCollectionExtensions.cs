@@ -8,8 +8,6 @@ namespace Microsoft.Extensions.DependencyInjection
 {
     public static class DopplerSecurityServiceCollectionExtensions
     {
-        private const string TOKEN_SIGNATURE_POLICY = "TokenSignature";
-
         public static IServiceCollection AddDopplerSecurity(this IServiceCollection services)
         {
             services.AddSingleton<IAuthorizationHandler, IsOwnResourceAuthorizationHandler>();
@@ -32,7 +30,7 @@ namespace Microsoft.Extensions.DependencyInjection
                         .RequireAuthenticatedUser()
                         .Build();
 
-                    o.AddPolicy(TOKEN_SIGNATURE_POLICY, new AuthorizationPolicyBuilder()
+                    o.AddPolicy(DopplerSecurityDefaults.DEFAULT_OR_SIGNED_PATHS_POLICY, new AuthorizationPolicyBuilder()
                         .AddAuthenticationSchemes(JwtBearerDefaults.AuthenticationScheme) //TODO: Check which scheme to use
                         .AddRequirements(new DopplerAuthorizationRequirement
                         {

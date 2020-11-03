@@ -61,7 +61,7 @@ namespace Billing.API.Controllers
         }
 
         [HttpGet]
-        [Authorize("TokenSignature")]
+        [Authorize(DopplerSecurityDefaults.DEFAULT_OR_SIGNED_PATHS_POLICY)]
         [Route("/accounts/{origin}/{clientId:int:min(1)}/invoices/{filename}")]
         public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename, [FromQuery(Name = "_s")] string signature)
         {
