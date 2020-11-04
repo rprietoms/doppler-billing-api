@@ -41,7 +41,9 @@ namespace Billing.API.DopplerSecurity
 
         public void Configure(DopplerSecurityOptions options)
         {
-            var path = _configuration.GetValue("PublicKeysFolder", "public-keys");
+            var path = _configuration.GetValue(
+                DopplerSecurityDefaults.PUBLIC_KEYS_FOLDER_CONFIG_KEY,
+                DopplerSecurityDefaults.PUBLIC_KEYS_FOLDER_DEFAULT_CONFIG_VALUE);
             var files = _fileProvider.GetDirectoryContents(path).Where(x => !x.IsDirectory);
             var publicKeys = files
                 .Select(ReadToEnd)

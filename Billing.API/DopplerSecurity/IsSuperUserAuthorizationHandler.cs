@@ -8,19 +8,18 @@ using System.Threading.Tasks;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsSuperUserHandler<T> : AuthorizationHandler<T>
-        where T: IAuthorizationRequirement
+    public class IsSuperUserAuthorizationHandler : AuthorizationHandler<DopplerAuthorizationRequirement>
     {
-        private readonly ILogger<IsSuperUserHandler<T>> _logger;
+        private readonly ILogger<IsSuperUserAuthorizationHandler> _logger;
 
-        public IsSuperUserHandler(ILogger<IsSuperUserHandler<T>> logger)
+        public IsSuperUserAuthorizationHandler(ILogger<IsSuperUserAuthorizationHandler> logger)
         {
             _logger = logger;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, T requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DopplerAuthorizationRequirement requirement)
         {
-            if (IsSuperUser(context))
+            if (requirement.AllowSuperUser && IsSuperUser(context))
             {
                 context.Succeed(requirement);
             }
@@ -30,13 +29,13 @@ namespace Billing.API.DopplerSecurity
 
         private bool IsSuperUser(AuthorizationHandlerContext context)
         {
-            if (!context.User.HasClaim(c => c.Type.Equals("isSU")))
+            if (!context.User.HasClaim(c => c.Type.Equals(DopplerSecurityDefaults.SUPERUSER_JWT_KEY)))
             {
                 _logger.LogDebug("The token hasn't super user permissions.");
                 return false;
             }
 
-            var isSuperUser = bool.Parse(context.User.FindFirst(c => c.Type.Equals("isSU")).Value);
+            var isSuperUser = bool.Parse(context.User.FindFirst(c => c.Type.Equals(DopplerSecurityDefaults.SUPERUSER_JWT_KEY)).Value);
             if (isSuperUser)
             {
                 return true;

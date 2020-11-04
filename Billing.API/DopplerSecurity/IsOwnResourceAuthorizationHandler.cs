@@ -6,19 +6,18 @@ using Microsoft.AspNetCore.Mvc.Filters;
 
 namespace Billing.API.DopplerSecurity
 {
-    public class IsOwnResourceHandler<T> : AuthorizationHandler<T>
-        where T: IAuthorizationRequirement
+    public class IsOwnResourceAuthorizationHandler : AuthorizationHandler<DopplerAuthorizationRequirement>
     {
-        private readonly ILogger<IsOwnResourceHandler<T>> _logger;
+        private readonly ILogger<IsOwnResourceAuthorizationHandler> _logger;
 
-        public IsOwnResourceHandler(ILogger<IsOwnResourceHandler<T>> logger)
+        public IsOwnResourceAuthorizationHandler(ILogger<IsOwnResourceAuthorizationHandler> logger)
         {
             _logger = logger;
         }
 
-        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, T requirement)
+        protected override Task HandleRequirementAsync(AuthorizationHandlerContext context, DopplerAuthorizationRequirement requirement)
         {
-            if (IsOwnResource(context))
+            if (requirement.AllowOwnResource && IsOwnResource(context))
             {
                 context.Succeed(requirement);
             }
