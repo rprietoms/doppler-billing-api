@@ -177,7 +177,7 @@ namespace Billing.API.Services.Invoice
             query += $"        WHERE T0.\"ObjType\" = '{queryData.ObjType}' AND ";
             query += $"              (T0.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR T0.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%') ";
             query += "         GROUP BY T0.\"DocEntry\" ) x ON x.\"DocEntry\" = INV.\"DocEntry\" ";
-            query += $" INNER JOIN {schema}.ATC1 AT1 ON x.\"AtcEntry\" = AT1.\"AbsEntry\" ";
+            query += $" INNER JOIN {schema}.ATC1 AT1 ON x.\"AtcEntry\" = AT1.\"AbsEntry\" AND AT1.\"Line\" = 1 ";
             query += $" INNER JOIN {schema}.oeml OEM ON OEM.\"AbsEntry\" = x.\"AbsEntry\" ";
             query += $" WHERE INV.\"ObjType\" = '{queryData.ObjType}' AND ";
             query += $"       (INV.\"CardCode\" = '{clientPrefix}{clientId:0000000000000}' OR INV.\"CardCode\" LIKE '{clientPrefix}{clientId:00000000000}.%')";
