@@ -11,6 +11,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
             services.AddSingleton<DummyInvoiceService>();
             services.AddTransient<InvoiceService>();
+            services.AddTransient<ISapServiceSettingsService, SapServiceSettingsService>();
 
             services.AddTransient(serviceProvider =>
             {

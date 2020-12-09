@@ -16,33 +16,44 @@ namespace Billing.API.Services.Invoice
     {
         private readonly ILogger<InvoiceService> _logger;
         private readonly IOptions<InvoiceProviderOptions> _options;
+        private readonly ISapServiceSettingsService _sapServiceSettingsService;
 
-        public InvoiceService(ILogger<InvoiceService> logger, IOptions<InvoiceProviderOptions> options)
+        public InvoiceService(ILogger<InvoiceService> logger, IOptions<InvoiceProviderOptions> options, ISapServiceSettingsService sapServiceSettingsService)
         {
             _logger  = logger;
             _options = options;
+            _sapServiceSettingsService = sapServiceSettingsService;
         }
 
         public async Task<PaginatedResult<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId, int page, int pageSize, string sortColumn, bool sortAsc)
         {
-            var dt = await GetInvoiceRecords(clientPrefix, clientId);
+            var sapSystems = _options.Value.ConfigsBySystem;
+            IQueryable<InvoiceListItem> invoices = new List<InvoiceListItem>().AsQueryable();
 
-            var invoices = dt.Select().Select(dr => new InvoiceListItem(
-                dr.Field<string>("DocumentType"),
-                dr.Field<string>("DocumentNumber"),
-                clientPrefix,
-                clientId.ToString(),
-                dr.Field<DateTime>("CreateDate").ToDateTimeOffSet(),
-                dr.Field<DateTime>("DocDueDate").ToDateTimeOffSet(),
-                dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
-                dr.Field<string>("DocCur"),
-                dr.Field<decimal>("DocTotal").ToDouble(),
-                dr.Field<decimal>("PaidToDate").ToDouble(),
-                $"invoice_{dr.Field<DateTime>("SendDate"):yyyy-MM-dd}_{dr.Field<int>("AbsEntry")}.{dr.Field<string>("FileExt")}",
-                dr.Field<int>("AbsEntry")))
-                .AsQueryable();
+            // Get invoices for all supported sap system because the client can be in more than one sap system.
+            // For example: One client exists in SAP AR and then it changes the billing system to QBL then the client is created in the SAP US
+            // for it reason we need get the invoices for all supported sap system.
+            foreach (var sapSystem in sapSystems)
+            {
+                var dt = await GetInvoiceRecords(clientPrefix, clientId, sapSystem.Key, null);
 
-            //TODO: When we can get the data from database we will try to move the pagination into the sql query
+                invoices = invoices.Union(
+                    dt.Select().Select(dr => new InvoiceListItem(
+                    dr.Field<string>("DocumentType"),
+                    dr.Field<string>("DocumentNumber"),
+                    clientPrefix,
+                    clientId.ToString(),
+                    dr.Field<DateTime>("CreateDate").ToDateTimeOffSet(),
+                    dr.Field<DateTime>("DocDueDate").ToDateTimeOffSet(),
+                    dr.Field<DateTime>("SendDate").ToDateTimeOffSet(),
+                    dr.Field<string>("DocCur"),
+                    dr.Field<decimal>("DocTotal").ToDouble(),
+                    dr.Field<decimal>("PaidToDate").ToDouble(),
+                    $"invoice_{sapSystem.Key}_{dr.Field<DateTime>("SendDate"):yyyy-MM-dd}_{dr.Field<int>("AbsEntry")}.{dr.Field<string>("FileExt")}",
+                    dr.Field<int>("AbsEntry"))).AsQueryable());
+            }
+
+            // TODO: When we can get the data from database we will try to move the pagination into the sql query
             var invoiceSorted = GetInvoicesSorted(invoices, sortColumn, sortAsc).ToList();
             var paginatedInvoices = invoiceSorted;
 
@@ -54,9 +65,9 @@ namespace Billing.API.Services.Invoice
             return new PaginatedResult<InvoiceListItem> { Items = paginatedInvoices, TotalItems = invoiceSorted.Count };
         }
 
-        public async Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
+        public async Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, string sapSystem, int fileId)
         {
-            var dt = await GetInvoiceRecords(clientPrefix, clientId, fileId);
+            var dt = await GetInvoiceRecords(clientPrefix, clientId, sapSystem, fileId);
 
             var dr = dt.Select().FirstOrDefault();
 
@@ -77,7 +88,7 @@ namespace Billing.API.Services.Invoice
 
                     conn.Open();
 
-                    var schema = _options.Value.Schema;
+                    var schema = _sapServiceSettingsService.GetSapSchema("AR");
 
                     var query = $"select * from {schema}.oeml";
 
@@ -97,7 +108,39 @@ namespace Billing.API.Services.Invoice
                 return ex.Message;
             }
 
-            return "Successfull";
+            return "Successfully";
+        }
+
+        public async Task<string> TestSapUsConnection()
+        {
+            try
+            {
+                using (var conn = new HanaConnection(_options.Value.DbConnectionString))
+                {
+
+                    conn.Open();
+
+                    var schema = _sapServiceSettingsService.GetSapSchema("US");
+
+                    var query = $"select * from {schema}.oeml";
+
+                    var da = new HanaDataAdapter(query, conn);
+
+                    var dt = new DataTable("Invoices");
+
+                    da.Fill(dt);
+
+                    conn.Close();
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error testing Hana connection");
+
+                return ex.Message;
+            }
+
+            return "Successfully";
         }
 
         private static IEnumerable<InvoiceListItem> GetInvoicesSorted(IQueryable<InvoiceListItem> invoices, string sortColumn, bool sortAsc)
@@ -105,7 +148,7 @@ namespace Billing.API.Services.Invoice
             return invoices.OrderBy(sortColumn + (!sortAsc ? " descending" : ""));
         }
 
-        private async Task<DataTable> GetInvoiceRecords(string clientPrefix, int clientId, int? fileId = null)
+        private async Task<DataTable> GetInvoiceRecords(string clientPrefix, int clientId, string sapSystem, int? fileId = null)
         {
             using (var conn = new HanaConnection(_options.Value.DbConnectionString))
             {
@@ -114,12 +157,12 @@ namespace Billing.API.Services.Invoice
                 var query = string.Empty;
 
                 /* Invoices */
-                query += CreateInvoiceQuery("FC", clientPrefix, clientId, fileId);
+                query += CreateInvoiceQuery("FC", clientPrefix, clientId, sapSystem, fileId);
 
                 query += " UNION ";
 
                 /* Credit Notes */
-                query += CreateInvoiceQuery("NC", clientPrefix, clientId, fileId);
+                query += CreateInvoiceQuery("NC", clientPrefix, clientId, sapSystem, fileId);
 
                 var da = new HanaDataAdapter(query, conn);
                 var dt = new DataTable("Invoices");
@@ -132,9 +175,9 @@ namespace Billing.API.Services.Invoice
             }
         }
 
-        private string CreateInvoiceQuery(string documentType, string clientPrefix, int clientId, int? fileId = null)
+        private string CreateInvoiceQuery(string documentType, string clientPrefix, int clientId, string sapSystem, int? fileId = null)
         {
-            var schema = _options.Value.Schema;
+            var schema = _sapServiceSettingsService.GetSapSchema(sapSystem);
             var query = string.Empty;
 
             var queryData = documentType == "FC"
