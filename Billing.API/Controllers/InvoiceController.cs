@@ -1,3 +1,4 @@
+using System;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Billing.API.DopplerSecurity;
@@ -13,19 +14,23 @@ namespace Billing.API.Controllers
     [ApiController]
     public class InvoiceController : ControllerBase
     {
-        private static readonly Regex InvoiceFilenameRegex = new Regex(@"^invoice_\d{4}-\d{2}-\d{2}_(\d+)\.pdf$");
+        private static readonly Regex InvoiceFilenameRegex = new Regex(@"^invoice_(([A-Z]{2})_)?\d{4}-\d{2}-\d{2}_(\d+)\.pdf$");
 
         private readonly ILogger<InvoiceController> _logger;
         private readonly IInvoiceService _invoiceService;
         private readonly CryptoHelper _cryptoHelper;
         private readonly IOptions<InvoiceProviderOptions> _options;
+        private readonly ISapServiceSettingsService _sapServiceSettingsService;
 
-        public InvoiceController(ILogger<InvoiceController> logger, IInvoiceService invoiceService, CryptoHelper cryptoHelper, IOptions<InvoiceProviderOptions> options)
+        private const string _defaultSapSystem = "AR";
+
+        public InvoiceController(ILogger<InvoiceController> logger, IInvoiceService invoiceService, CryptoHelper cryptoHelper, IOptions<InvoiceProviderOptions> options, ISapServiceSettingsService sapServiceSettingsService)
         {
             _logger = logger;
             _invoiceService = invoiceService;
             _cryptoHelper = cryptoHelper;
             _options = options;
+            _sapServiceSettingsService = sapServiceSettingsService;
         }
 
         [HttpGet]
@@ -65,24 +70,34 @@ namespace Billing.API.Controllers
         [Route("/accounts/{origin}/{clientId:int:min(1)}/invoices/{filename}")]
         public async Task<IActionResult> GetInvoiceFile([FromRoute] string origin, [FromRoute] int clientId, [FromRoute] string filename, [FromQuery(Name = "_s")] string signature)
         {
-            _logger.LogDebug("Getting invoice for {0} client {1} filename {2}", origin, clientId, filename);
+            try
+            {
+                _logger.LogDebug("Getting invoice for {0} client {1} filename {2}", origin, clientId, filename);
 
-            if (!TryGetClientPrefix(origin, out var clientPrefix))
-                return BadRequest();
+                if (!TryGetClientPrefix(origin, out var clientPrefix))
+                    return BadRequest();
 
-            var match = InvoiceFilenameRegex.Match(filename);
+                var match = InvoiceFilenameRegex.Match(filename);
 
-            if (!match.Success)
-                return BadRequest();
+                if (!match.Success)
+                    return BadRequest();
 
-            var fileId = match.Groups[1].Value.ToInt32();
+                var fileId = match.Groups[3].Value.ToInt32();
+                var sapSystem = !string.IsNullOrEmpty(match.Groups[2].Value) ? match.Groups[2].Value : _defaultSapSystem;
 
-            var response = await _invoiceService.GetInvoiceFile(clientPrefix, clientId, fileId);
+                ValidateSapSystem(sapSystem);
 
-            if (response == null)
-                return NotFound();
+                var response = await _invoiceService.GetInvoiceFile(clientPrefix, clientId, sapSystem, fileId);
 
-            return File(response, "application/pdf", filename);
+                if (response == null)
+                    return NotFound();
+
+                return File(response, "application/pdf", filename);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpGet]
@@ -90,6 +105,15 @@ namespace Billing.API.Controllers
         public async Task<IActionResult> TestSapConnection()
         {
             var response = await _invoiceService.TestSapConnection();
+
+            return Ok(response);
+        }
+
+        [HttpGet]
+        [Route("/testSapUs")]
+        public async Task<IActionResult> TestSapUsConnection()
+        {
+            var response = await _invoiceService.TestSapUsConnection();
 
             return Ok(response);
         }
@@ -117,6 +141,11 @@ namespace Billing.API.Controllers
             }
 
             return true;
+        }
+
+        private void ValidateSapSystem(string sapSystem)
+        {
+            _sapServiceSettingsService.GetSapSchema(sapSystem);
         }
     }
 }

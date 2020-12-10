@@ -31,7 +31,7 @@ namespace Billing.API.Services.Invoice
             return await Task.FromResult(invoices);
         }
 
-        public Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, int fileId)
+        public Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, string sapSystem, int fileId)
         {
             var bytes = File.ReadAllBytes("sample.pdf");
 
@@ -39,6 +39,11 @@ namespace Billing.API.Services.Invoice
         }
 
         public async Task<string> TestSapConnection()
+        {
+            return await Task.FromResult("Successful");
+        }
+
+        public async Task<string> TestSapUsConnection()
         {
             return await Task.FromResult("Successful");
         }
@@ -56,7 +61,7 @@ namespace Billing.API.Services.Invoice
                 "ARS",
                 x == 50 ? -100 : 15500,
                 x == 50 ? -100 : 1000,
-                $"invoice_{DateTime.Today.AddDays(x):yyyy-MM-dd}_{x}.pdf",
+                $"invoice_AR_{DateTime.Today.AddDays(x):yyyy-MM-dd}_{x}.pdf",
                 x)
             ).AsQueryable();
 

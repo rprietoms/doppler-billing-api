@@ -7,8 +7,10 @@ namespace Billing.API.Services.Invoice
     {
         Task<PaginatedResult<InvoiceListItem>> GetInvoices(string clientPrefix, int clientId, int page, int pageSize, string sortColumn, bool sortAsc);
 
-        Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, int fileId);
+        Task<byte[]> GetInvoiceFile(string clientPrefix, int clientId, string sapSystem, int fileId);
 
         Task<string> TestSapConnection();
+
+        Task<string> TestSapUsConnection();
     }
 }

@@ -347,6 +347,7 @@ namespace Billing.API.Test
 
         [Theory]
         [InlineData("accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?_s=sOvP2buZIW8IFDAXMIe8BROG9GoB7zLPCzAv3OzVs")]
+        [InlineData("accounts/doppler/1/invoices/invoice_AR_2020-01-01_123.pdf?_s=6RTlC0JYyqMTj1LaHAbnTWQFLC9feeUNSNzzkRlE")]
         public async Task GetInvoiceFile_WithNoTokenAndValidSignature_ShouldReturnPdfFileContents(string path)
         {
             // Arrange
@@ -373,7 +374,7 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A", "accounts/doppler/1/invoices/invoice_2020-01-01_123.pdf?_s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
+        [InlineData("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A", "accounts/doppler/1/invoices/invoice_AR_2020-01-01_123.pdf?_s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
         public async Task GetInvoiceFile_WithTokenAndInvalidSignature_ShouldReturnPdfFileContents(string token, string path)
         {
             // Arrange
@@ -524,6 +525,33 @@ namespace Billing.API.Test
 
                 Assert.All(result.Items,
                     item => Assert.Equal(item.Amount - item.PaidToDate, item.Balance));
+            }
+        }
+
+        [Fact]
+        public async Task GetInvoiceFile_WhenInvalidSapSystem_ReturnsBadRequest()
+        {
+            // Arrange
+            using (var appFactory = _factory.WithDisabledLifeTimeValidation())
+            {
+                appFactory.AddConfiguration(new Dictionary<string, string>
+                {
+                    ["Invoice:UseDummyData"] = "true"
+                });
+
+                var client = appFactory.CreateClient();
+
+                var request = new HttpRequestMessage(HttpMethod.Get, $"accounts/doppler/1/invoices/invoice_MX_2020-01-01_123.pdf?_s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
+
+                // Act
+                var response = await client.SendAsync(request);
+                var content = await response.Content.ReadAsStringAsync();
+
+                // Assert
+                Assert.NotNull(content);
+                Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+                Assert.Equal($"The sapSystem 'MX' is not supported. Only supports: AR, US", content);
             }
         }
     }
