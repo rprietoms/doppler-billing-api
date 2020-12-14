@@ -202,7 +202,7 @@ namespace Billing.API.Services.Invoice
             query += "     OEM.\"SendTime\" ,";
             query += "     cast(OEM.\"DocEntry\" AS NVARCHAR) AS \"DocEntry\" ,";
             query += $"    '{documentType}' AS \"DocumentType\", ";
-            query += "     INV.\"Letter\" || '-' || (Right(INV.\"PTICode\", 4) || '-' || Right('00000000' || COALESCE(INV.\"FolNumFrom\", '0'), 8))  AS \"DocumentNumber\", ";
+            query += "     IFNULL(INV.\"Letter\" || '-' || (Right(INV.\"PTICode\", 4) || '-' || Right('00000000' || COALESCE(INV.\"FolNumFrom\", '0'), 8)), CAST(INV.\"DocNum\" AS VARCHAR(10))) AS \"DocumentNumber\", ";
             query += $"    INV.\"DocTotal\" * {queryData.AmountFactor} AS \"DocTotal\" ,";
             query += $"    INV.\"PaidToDate\" * {queryData.AmountFactor} AS \"PaidToDate\" ,"; ;
             query += "      INV.\"CreateDate\" ,";
