@@ -11,6 +11,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Folder Include="public-keys\" />
     <Folder Include="wwwroot\" />
   </ItemGroup>
 
@@ -33,9 +34,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Update="public-keys\dev.xml">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="sample.pdf">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
