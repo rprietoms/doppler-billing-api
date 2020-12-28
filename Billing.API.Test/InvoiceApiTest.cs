@@ -45,17 +45,17 @@ namespace Billing.API.Test
 
         [Theory]
         // isSU=true
-        [InlineData(HttpStatusCode.OK, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A")]
+        [InlineData(HttpStatusCode.OK, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.ZOjcLy7DkpyhcJTI7ZGKQfkjrWW1B8TZvFYjwXDiZrZEgZSlKNG0P6ecu1MDtgEhRKVIIRAEvtNVTNg7JRYV9wMFuBOqYuiQT0yddccYbhN6w6W8gS_yJsY6AxombY_fMPezvuXxf9ScZC7qmHNDV-JbR8jaxyoY0HRpVBesD6sD3lSprNQDvZlw_jaHeisF21-rrDyW2XwKPpCu5mVllOn_Nsg8w1K44wKG5GgKIaP_8ItfQUI5fyflx6LrXGkQ1tP43wEYveDycVB7CJ9DRAd4oI4eKoGygTNm3wO1ab4mlGautmY8qB7SDbuLjhPFRch2WsWsCz4dSNJp268dvw")]
         // "isSu": false,
-        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ3MDksImV4cCI6MTU5Nzc2NDcxOSwiaWF0IjoxNTk3NzY0NzA5LCJpc1NVIjpmYWxzZX0.K7khi_qhvj0eF3ahZzNcRkzrRPDFR_q-5xAujSeFG3GaFhJIhgARX7fsA4iPPhTJtFA1oqF54d-vyNhGAhBDFzSKUHyRegdRJ5FiQwcQ537PbZUfCc702sEi-MjzfpkP1PZrk0Zrn5-ybUDJi-6qjia8_YxvA4px8KGPT10Z6PnrpeCuWtESmMlSre7CgCRpydXZ0XkV0hsn-CD8p5oSV9iMCXS3npJBBhzLvw9B_LienlnJQMVs88ykSDqZNUWdGMVTO4QF4JChd67W7B9I0MmmbtgCZ5yo0EwykYR6RaZYihtKjesmHlBcFaHJc1C-3V8TQ3L0-81PpemqZd_3yQ")]
+        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ3MDksImV4cCI6MTU5Nzc2NDcxOSwiaWF0IjoxNTk3NzY0NzA5LCJpc1NVIjpmYWxzZX0.QDZolMwgEVP18-coDEbWajFbjhqPGFGOgHQusTda1gid__FzCO5w1idGhMoAuiyfRdVVzuF9I5Iz_Opx020xVkyPUl3EDU32-RHn2OBQOtmOlvna2cJyeQk0LwsWTf1lnvUKamBKUeztl2IXJXNcXwXt9y7hC6fMlYsn3hDRA0YcIfv1Q37iz8_cHYQ7O2HB1JuZRUwkhfobMYvXDLt3GS8u8MNSM_hKTmlf6wII-jRG-G25ePFibkChld2Rc5cjzVQy_VM9q83BZiSSeaoLUm0NNw49eACiQ50KY_YhY2GeEnptA1p3JicKMGWB_RNp3MdC632EZmtPtCjn8TkRHA")]
         // without isSU and nameId
-        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1NzcsImV4cCI6MTU5Nzc2NDU4NywiaWF0IjoxNTk3NzY0NTc3fQ.S3qzN2kCR7VtrkCG-FTq_Hrv377Fn8wevryAhHHKq5SupMsEaa1SYAdNZdlMLZyyZQUe95UYM4_Ba63Kbm9zu6fkh_xKfmLGbiZhEjJM5nVR0HLa7mAPTNY25YrfRtQRyyLvLDJ1KSXIY_iUd1IT1hQAIqMG7pD29eD6RY4_n_z619AgET94F_Jj7w505JvNNR7z5fpW5ZM1XaEPlrCbXVfCKtLLxM8YlNRBOmyJRG2ideaRfqEw7vb3AIW6c4EdHV1c9EBsYGfWkSJZOOpXKoOpUmvhVLmxpctTNNq_iS67JE3AFlkatboq9z8l9DHDIdoveIE6unHq4YgUmltnDg")]
+        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1NzcsImV4cCI6MTU5Nzc2NDU4NywiaWF0IjoxNTk3NzY0NTc3fQ.bIUKKuIZOPZapoB05v3N5h_dHfu7R_O_DZ2pu2j3esJd3kwUjxEwqVVI_l97yBMScaCnbsdEyt4w1nKYwI5vj6UQR7GJoR6TERPfFtpiO0zlGEIWPJu9zI3fgA7HfJifw5B6fQidDHDYUbbM3oHD9cn7CiB4XizEe-6LGnjlBzo5Hr1Rsrz6-eD5UQhx7FkqLLRFDhIQ9cn_36Wc9ylzfvmzKZ4ZAn4Q5-s3f2rkN-tuXiBAxrwkgXhOZ72f8dj5mED6PLauH3uPEbaMcrVKD-CIe9Una5zq-zWtsZVasSQeO1_lCjQzhhTQXfwrWJ9WBx1ozkDA9XzJiiS_jAMqMA")]
         // invalid token
         [InlineData(HttpStatusCode.Unauthorized, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9")]
         // "nameid": 222541, "isSu": false,
-        [InlineData(HttpStatusCode.OK, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjIyMjU0MSwidW5pcXVlX25hbWUiOiJiYW1hcm9AbWFraW5nc2Vuc2UuY29tIiwiaXNTdSI6ZmFsc2UsInN1YiI6ImJhbWFyb0BtYWtpbmdzZW5zZS5jb20iLCJjdXN0b21lcklkIjpudWxsLCJjZGhfY3VzdG9tZXJJZCI6bnVsbCwicm9sZSI6IlVTRVIiLCJpYXQiOjE2MDE5MTgyNzYsImV4cCI6MTYwMTkyMDA3Nn0.8J3SwjqB0GoTw3RwCeYwR9jAE_hZUnJ-1ooYYczl-JoBXBZYNxWjMpXl_JbYjC07rl0FW8lN1pas5ENWTA8WszDCTGSAu4YSFXcikleYOpddtuXBRGouM2PzRTWDm2ANY8yAScwVL0uzP3cG3u3819GYNWzoN1oC0rnDRvGmh2wXTid_mE-ZBq-DMuxnB1ivC1Ji728FfGtUkB0T8Qu9mYQnRCaNof8K47eWntko1kWG7LDxA83up3KxK-qhwnEwnNZQvhxneL8Q5SV5-qjtXfwn_8PBVGSqRZoc0tqeALfolzycCwlobmV9opYgbjqmgDQENBIyKV4kPfm8QS4JYg")]
+        [InlineData(HttpStatusCode.OK, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjIyMjU0MSwidW5pcXVlX25hbWUiOiJiYW1hcm9AbWFraW5nc2Vuc2UuY29tIiwiaXNTdSI6ZmFsc2UsInN1YiI6ImJhbWFyb0BtYWtpbmdzZW5zZS5jb20iLCJjdXN0b21lcklkIjpudWxsLCJjZGhfY3VzdG9tZXJJZCI6bnVsbCwicm9sZSI6IlVTRVIiLCJpYXQiOjE2MDE5MTgyNzYsImV4cCI6MTYwMTkyMDA3Nn0.jI7WmdgECN2i7DpGf4xx4Q8uzy0v1LNlt__lnMi5Gl4r2bNJsmTJNGt1VIvsdp1YfoxZ9eIwilND7kGu6nkRo90C_HYBbRxjP1fHhbFSYyLAtLNAU6T93cCt0abWCuY-_x5NlbkeehpOZ0QxbxKYCM4yhE8XBcOh1_DZ-lOWMfegZAjhGtzVnmgbR7qxJsV893suzDGvLwkwaevmakJC-jCF6eCyZcdRLQ2GnEa3ZbKvRUow9yf1B5lBGywqnv83vQPxKb63k2Khy0UETKcylviF6i0oOPLm3U6Z7Gv-Lmh5AZsTN6gJrkAVSTVkUL2hizegAfkTMvDpPtQETymgyQ")]
         //"nameid": 50018, "isSu": false,
-        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjUwMDE4LCJ1bmlxdWVfbmFtZSI6ImNiZXJuYXRAZ2V0Y3MuY29tIiwiaXNTdSI6ZmFsc2UsInN1YiI6ImNiZXJuYXRAZ2V0Y3MuY29tIiwiY3VzdG9tZXJJZCI6IjEwMjQiLCJjZGhfY3VzdG9tZXJJZCI6IjEwMjQiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTYwMjY4NTEzMiwiZXhwIjoxNjAyNjg2OTMyfQ.lQ6XM4U69kLvpye4WdT-YQ8Aio_vr_T-V1rVpsB7gMG-cPQ_3rVlGv0rxIg_koXB8DY7SXN3O0GCFJ5X78bBHDf49fwiePtSc40Ocjk4m2VNZuUKAOm1Waw9LboExICOu0MpYBhlBQs_r3WKbaA2UOGDQTjok2AjzLfJ9S29qVgFqgzFhHIcTD7QEa30BV2hff-Ou4Y9HtvjqrXhnPQz2lD1usxXZrp5US6u-fXeXEoLRX1mboTUe7b0yWfA_JlIqtMeCu39kZxS0RPjdplgqWYmFKkQRsEZ3muMS22BcGKwsHZqai0CxCqaWhfBLE9COStc4Ep4K9iHFslP1fCdaQ")]
+        [InlineData(HttpStatusCode.Forbidden, "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjUwMDE4LCJ1bmlxdWVfbmFtZSI6ImNiZXJuYXRAZ2V0Y3MuY29tIiwiaXNTdSI6ZmFsc2UsInN1YiI6ImNiZXJuYXRAZ2V0Y3MuY29tIiwiY3VzdG9tZXJJZCI6IjEwMjQiLCJjZGhfY3VzdG9tZXJJZCI6IjEwMjQiLCJyb2xlIjoiVVNFUiIsImlhdCI6MTYwMjY4NTEzMiwiZXhwIjoxNjAyNjg2OTMyfQ.cKCNWIXKJ_WkA-MR8SvcbRkFpRaHvF-Jm2o_NZD2vxgl7aP7AJLcYRsC7aSfztStZgE4H6idyZwLN4USdsbqgvcgOXGqLSrXJach0tbp7VvrMYwluIqZgDHeYrN0QRWSrvUMtSyHGs05N4MYuaR6xnq0fwdFTeXMv4xGAp6YQO2d-y2Y8Ktb3drayrkhnsw-ge_bNMSRGwszHAB5IPesStHFYWrYi5Snz_WkwaeuRyWIBNAdg2Eeqz6g3rM3WmBtnEf43nb-vtorLhOG7Dk4C8DaUdXZjSqPE7e9l11dlaCs5w-6izn89nnNR2tCFKzmXICyDMGbiMvIq98CGz-Edg")]
         public async Task GetInvoices_WhenToken_ReturnsResponse(HttpStatusCode httpStatusCode, string token)
         {
             // Arrange
@@ -287,7 +287,7 @@ namespace Billing.API.Test
             var client = appFactory.CreateClient();
 
             var request = new HttpRequestMessage(HttpMethod.Get, "https://localhost/accounts/doppler/1/invoices");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.ZOjcLy7DkpyhcJTI7ZGKQfkjrWW1B8TZvFYjwXDiZrZEgZSlKNG0P6ecu1MDtgEhRKVIIRAEvtNVTNg7JRYV9wMFuBOqYuiQT0yddccYbhN6w6W8gS_yJsY6AxombY_fMPezvuXxf9ScZC7qmHNDV-JbR8jaxyoY0HRpVBesD6sD3lSprNQDvZlw_jaHeisF21-rrDyW2XwKPpCu5mVllOn_Nsg8w1K44wKG5GgKIaP_8ItfQUI5fyflx6LrXGkQ1tP43wEYveDycVB7CJ9DRAd4oI4eKoGygTNm3wO1ab4mlGautmY8qB7SDbuLjhPFRch2WsWsCz4dSNJp268dvw");
 
             // Act
             var response = await client.SendAsync(request);
@@ -319,7 +319,7 @@ namespace Billing.API.Test
             // Arrange
             var client = _factory.CreateClient();
             var request = new HttpRequestMessage(HttpMethod.Get, "https://custom.domain.com/accounts/doppler/1/invoices");
-            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjg4NDY5LCJ1bmlxdWVfbmFtZSI6ImFtb3NjaGluaUBtYWtpbmdzZW5zZS5jb20iLCJpc1N1IjpmYWxzZSwic3ViIjoiYW1vc2NoaW5pQG1ha2luZ3NlbnNlLmNvbSIsImN1c3RvbWVySWQiOiIxMzY3IiwiY2RoX2N1c3RvbWVySWQiOiIxMzY3Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE1OTQxNTUwMjYsImV4cCI6MTU5NDE1NjgyNn0.a4eVqSBptPJk0y9V5Id1yXEzkSroX7j9712W6HOYzb-9irc3pVFQrdWboHcZPLlbpHUdsuoHmFOU-l14N_CjVF9mwjz0Qp9x88JP2KD1x8YtlxUl4BkIneX6ODQ5q_hDeQX-yIUGoU2-cIXzle-JzRssg-XIbaf34fXnUSiUGnQRAuWg3IkmpeLu9fVSbYrY-qW1os1gBSq4NEESz4T87hJblJv3HWNQFJxAtvhG4MLX2ITm8vYNtX39pwI5gdkLY7bNzWmJ1Uphz1hR-sdCdM2oUWKmRmL7txsoD04w5ca7YbdHQGwCI92We4muOs0-N7a4JHYjuDM9lL_TbJGw2w");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1laWQiOjg4NDY5LCJ1bmlxdWVfbmFtZSI6ImFtb3NjaGluaUBtYWtpbmdzZW5zZS5jb20iLCJpc1N1IjpmYWxzZSwic3ViIjoiYW1vc2NoaW5pQG1ha2luZ3NlbnNlLmNvbSIsImN1c3RvbWVySWQiOiIxMzY3IiwiY2RoX2N1c3RvbWVySWQiOiIxMzY3Iiwicm9sZSI6IlVTRVIiLCJpYXQiOjE1OTQxNTUwMjYsImV4cCI6MTU5NDE1NjgyNn0.bv-ZHKulKMhBjcftiS-G_xa6MqPd8vmTJLCkitkSzz_lH6OblXnlLSjGAtoViT0yQun_IVqUggdfgY-Qv6cS_YeiYT-EqVLI1KFsFoWtZ7E1Yp5LZuVW70GskwZ7YbV7qlPrOOVBUbt6bD4LtwxudJmIenNBIgIVV-dCTl6vQNXRY65af7Ak1BG8IJxBaPhiFPniMIfNi_6my7NiHtL7Db2eeYgIxXf5_R-8BZFQ0CxWzNDTpdfaB48SnC7n6aEg9FQdOxcu8XX4qPBjGfnvCui2J9s8XgLfRtVQ27WwletL9XnGq79Dyp2PdNUsCcR2d4CMRxvzK1rO2jXSJ9Rf7w");
 
             // Act
             var response = await client.SendAsync(request);
@@ -374,7 +374,7 @@ namespace Billing.API.Test
         }
 
         [Theory]
-        [InlineData("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A", "accounts/doppler/1/invoices/invoice_AR_2020-01-01_123.pdf?_s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
+        [InlineData("eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.ZOjcLy7DkpyhcJTI7ZGKQfkjrWW1B8TZvFYjwXDiZrZEgZSlKNG0P6ecu1MDtgEhRKVIIRAEvtNVTNg7JRYV9wMFuBOqYuiQT0yddccYbhN6w6W8gS_yJsY6AxombY_fMPezvuXxf9ScZC7qmHNDV-JbR8jaxyoY0HRpVBesD6sD3lSprNQDvZlw_jaHeisF21-rrDyW2XwKPpCu5mVllOn_Nsg8w1K44wKG5GgKIaP_8ItfQUI5fyflx6LrXGkQ1tP43wEYveDycVB7CJ9DRAd4oI4eKoGygTNm3wO1ab4mlGautmY8qB7SDbuLjhPFRch2WsWsCz4dSNJp268dvw", "accounts/doppler/1/invoices/invoice_AR_2020-01-01_123.pdf?_s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123")]
         public async Task GetInvoiceFile_WithTokenAndInvalidSignature_ShouldReturnPdfFileContents(string token, string path)
         {
             // Arrange
@@ -439,7 +439,7 @@ namespace Billing.API.Test
                 var client = appFactory.CreateClient();
 
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/invalid_origin/1/invoices/filename.ext?s=123456");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.ZOjcLy7DkpyhcJTI7ZGKQfkjrWW1B8TZvFYjwXDiZrZEgZSlKNG0P6ecu1MDtgEhRKVIIRAEvtNVTNg7JRYV9wMFuBOqYuiQT0yddccYbhN6w6W8gS_yJsY6AxombY_fMPezvuXxf9ScZC7qmHNDV-JbR8jaxyoY0HRpVBesD6sD3lSprNQDvZlw_jaHeisF21-rrDyW2XwKPpCu5mVllOn_Nsg8w1K44wKG5GgKIaP_8ItfQUI5fyflx6LrXGkQ1tP43wEYveDycVB7CJ9DRAd4oI4eKoGygTNm3wO1ab4mlGautmY8qB7SDbuLjhPFRch2WsWsCz4dSNJp268dvw");
 
                 // Act
                 var response = await client.SendAsync(request);
@@ -490,7 +490,7 @@ namespace Billing.API.Test
                 var client = appFactory.CreateClient();
 
                 var request = new HttpRequestMessage(HttpMethod.Get, $"https://custom.domain.com/accounts/doppler/1/invoices/whatever.ext");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.ZOjcLy7DkpyhcJTI7ZGKQfkjrWW1B8TZvFYjwXDiZrZEgZSlKNG0P6ecu1MDtgEhRKVIIRAEvtNVTNg7JRYV9wMFuBOqYuiQT0yddccYbhN6w6W8gS_yJsY6AxombY_fMPezvuXxf9ScZC7qmHNDV-JbR8jaxyoY0HRpVBesD6sD3lSprNQDvZlw_jaHeisF21-rrDyW2XwKPpCu5mVllOn_Nsg8w1K44wKG5GgKIaP_8ItfQUI5fyflx6LrXGkQ1tP43wEYveDycVB7CJ9DRAd4oI4eKoGygTNm3wO1ab4mlGautmY8qB7SDbuLjhPFRch2WsWsCz4dSNJp268dvw");
 
                 // Act
                 var response = await client.SendAsync(request);
@@ -542,7 +542,7 @@ namespace Billing.API.Test
                 var client = appFactory.CreateClient();
 
                 var request = new HttpRequestMessage(HttpMethod.Get, $"accounts/doppler/1/invoices/invoice_MX_2020-01-01_123.pdf?_s=792naTFnk0doxkAi3G4Dt2ITSQttLcf6OypamgK123");
-                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.j1qzmKcnpCCBoXAtK9QuzCcnkIedK_kpwlrQ315VX_bwuxNxDBeEgKCOcjACUaNnf92bStGVYxXusSlnCgWApjlFG4TRgcTNsBC_87ZMuTgjP92Ou_IHi5UVDkiIyeQ3S_-XpYGFksgzI6LhSXu2T4LZLlYUHzr6GN68QWvw19m1yw6LdrNklO5qpwARR4WEJVK-0dw2-t4V9jK2kR8zFkTYtDUFPEQaRXFBpaPWAdI1p_Dk_QDkeBbmN_vTNkF7JwmqXRRAaz5fiMmcgzFmayJFbM0Y9LUeaAYFSZytIiYZuNitVixWZEcXT_jwtfHpyDwZKY1-HlyMmUJJuVsf2A");
+                request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYmYiOjE1OTc3NjQ1MjIsImV4cCI6MTU5Nzc2NDUzMiwiaWF0IjoxNTk3NzY0NTIyLCJpc1NVIjp0cnVlfQ.ZOjcLy7DkpyhcJTI7ZGKQfkjrWW1B8TZvFYjwXDiZrZEgZSlKNG0P6ecu1MDtgEhRKVIIRAEvtNVTNg7JRYV9wMFuBOqYuiQT0yddccYbhN6w6W8gS_yJsY6AxombY_fMPezvuXxf9ScZC7qmHNDV-JbR8jaxyoY0HRpVBesD6sD3lSprNQDvZlw_jaHeisF21-rrDyW2XwKPpCu5mVllOn_Nsg8w1K44wKG5GgKIaP_8ItfQUI5fyflx6LrXGkQ1tP43wEYveDycVB7CJ9DRAd4oI4eKoGygTNm3wO1ab4mlGautmY8qB7SDbuLjhPFRch2WsWsCz4dSNJp268dvw");
 
                 // Act
                 var response = await client.SendAsync(request);
