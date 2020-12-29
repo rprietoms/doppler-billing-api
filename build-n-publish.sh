@@ -5,6 +5,7 @@ name=""
 version=""
 versionPre=""
 platform="linux"
+imageName=""
 
 if [ -n "${GIT_REF}" ]
 then
@@ -18,24 +19,28 @@ print_help () {
     echo "Build project's docker images and publish them to DockerHub"
     echo ""
     echo "Options:"
+    echo "  -i, --image, image name (mandatory)"
     echo "  -c, --commit (mandatory)"
-    echo "  -n, --name"
-    echo "  -v, --version (or set GIT_REF environment variable, ie: '/refs/tags/v0.0.14')"
+    echo "  -n, --name, version name"
+    echo "  -v, --version, version number (or set GIT_REF environment variable, ie: '/refs/tags/v0.0.14')"
     echo "  -s, --pre-version-suffix (optional, only with version)"
     echo "  -p, --platform (optional, default linux)"
     echo "  -h, --help"
     echo "Only one of name or version parameters is required, and cannot be included together."
     echo
     echo "Examples:"
-    echo "  sh build-n-publish.sh --commit=aee25c286a7c8265e2b32ccc293f5ab0bd7a9d57 --version=v1.2.11"
-    echo "  sh build-n-publish.sh --commit=e247ba0527665eb9dd7ffbff00bb42e5073cd457 --version=v0.0.0 --pre-version-suffix=commit-e247ba0527665eb9dd7ffbff00bb42e5073cd457"
-    echo "  sh build-n-publish.sh -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5"
-    echo "  sh build-n-publish.sh -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5 -s=beta1"
-    echo "  sh build-n-publish.sh -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5 -s=pr123"
+    echo "  sh build-n-publish.sh --image=dopplerdock/doppler-billing-api --commit=aee25c286a7c8265e2b32ccc293f5ab0bd7a9d57 --version=v1.2.11"
+    echo "  sh build-n-publish.sh --image=dopplerdock/doppler-billing-api --commit=e247ba0527665eb9dd7ffbff00bb42e5073cd457 --version=v0.0.0 --pre-version-suffix=commit-e247ba0527665eb9dd7ffbff00bb42e5073cd457"
+    echo "  sh build-n-publish.sh -i=dopplerdock/doppler-billing-api -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5"
+    echo "  sh build-n-publish.sh -i=dopplerdock/doppler-billing-api -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5 -s=beta1"
+    echo "  sh build-n-publish.sh -i=dopplerdock/doppler-billing-api -c=94f85efb9c3689f409104ef7cde6813652ca59fb -v=v12.34.5 -s=pr123"
 }
 
 for i in "$@" ; do
 case $i in
+    -i=*|--image=*)
+    imageName="${i#*=}"
+    ;;
     -c=*|--commit=*)
     commit="${i#*=}"
     ;;
@@ -57,6 +62,13 @@ case $i in
     ;;
 esac
 done
+
+if [ -z "${imageName}" ]
+then
+  echo "Error: image parameter is mandatory"
+  print_help
+  exit 1
+fi
 
 if [ -z "${commit}" ]
 then
@@ -183,8 +195,6 @@ then
   platformSufix="-${platform}"
 fi
 
-imageName=fromdoppler/doppler-billing-api
-
 if [ "${platform}" = "linux" ]
 then
   docker build \
@@ -197,10 +207,6 @@ echo "${versionFull}-${platform}" > wwwroot_extras/version.txt
 docker build \
     -t "${imageName}:${canonicalTag}${platformSufix}" \
     .
-
-# TODO: It could break concurrent deployments with different docker accounts
-# Using /dev/null because PowerShell (in AppVeyor) detects logged warnings as errors
-docker login -u="${DOCKER_WRITTER_USERNAME}" -p="${DOCKER_WRITTER_PASSWORD}" 2> /dev/null
 
 if [ -n "${version}" ]
 then
