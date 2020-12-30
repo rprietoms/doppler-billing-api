@@ -24,12 +24,14 @@ for:
           if ("$env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT" -eq "")
           {
             # It is a branch
-            sh ./build-n-publish.sh --commit="$env:APPVEYOR_REPO_COMMIT" --name="$env:APPVEYOR_REPO_BRANCH" --platform=windows
+            echo "$env:DOCKER_WRITTER_PASSWORD" | docker login -u="$env:DOCKER_WRITTER_USERNAME" --password-stdin
+            sh ./build-n-publish.sh --image=fromdoppler/doppler-billing-api --commit="$env:APPVEYOR_REPO_COMMIT" --name="$env:APPVEYOR_REPO_BRANCH" --platform=windows
           }
           elseif ("$env:DOCKER_WRITTER_PASSWORD" -ne "")
           {
             # It is a PR with access to our secrets
-            sh ./build-n-publish.sh --commit="$env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT" --name=pr-"$env:APPVEYOR_PULL_REQUEST_NUMBER" --platform=windows
+            echo "$env:DOCKER_WRITTER_PASSWORD" | docker login -u="$env:DOCKER_WRITTER_USERNAME" --password-stdin
+            sh ./build-n-publish.sh --image=fromdoppler/doppler-billing-api --commit="$env:APPVEYOR_PULL_REQUEST_HEAD_COMMIT" --name=pr-"$env:APPVEYOR_PULL_REQUEST_NUMBER" --platform=windows
           }
           else
           {
@@ -43,4 +45,5 @@ for:
     skip_non_tags: true
     skip_tags: false
     build_script:
-      - ps: sh ./build-n-publish.sh --commit="$env:APPVEYOR_REPO_COMMIT" --version="$env:APPVEYOR_REPO_TAG_NAME" --platform=windows
+      - ps: echo "$env:DOCKER_WRITTER_PASSWORD" | docker login -u="$env:DOCKER_WRITTER_USERNAME" --password-stdin
+      - ps: sh ./build-n-publish.sh --image=fromdoppler/doppler-billing-api --commit="$env:APPVEYOR_REPO_COMMIT" --version="$env:APPVEYOR_REPO_TAG_NAME" --platform=windows
