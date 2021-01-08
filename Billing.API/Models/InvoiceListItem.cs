@@ -10,14 +10,17 @@ namespace Billing.API.Models
         public string DocumentNumber { get; }
         public string Product { get; }
         public string AccountId { get; }
+        [JsonConverter(typeof(IsoDateConverter))]
         public DateTimeOffset CreationDate { get; }
+        [JsonConverter(typeof(IsoDateConverter))]
         public DateTimeOffset DueDate { get; }
         [Obsolete("Use CreationDate or DueDate in place of this.")]
+        [JsonConverter(typeof(IsoDateConverter))]
         public DateTimeOffset Date { get; }
         public string Currency { get; }
         public double Amount { get; }
         public double PaidToDate { get; }
-        public double Balance { get { return Amount - PaidToDate; } }
+        public double Balance => Amount - PaidToDate;
 
         [JsonIgnore]
         public int FileId { get; }
