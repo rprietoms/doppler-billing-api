@@ -6,8 +6,7 @@
     "prettier": "^2.1.2"
   },
   "scripts": {
-    "verify.bak": "yarn prettier-check && yarn eclint-check",
-    "verify": "yarn eclint-check",
+    "verify": "yarn prettier-check && yarn eclint-check",
     "eclint-fix": "eclint fix",
     "eclint-check": "eclint check",
     "prettier-fix": "prettier --write \"**/**\"",
